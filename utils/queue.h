@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 05:38:04 pm
  * -----
- * Last Modified: 17 09 2022, 08:58:06 pm
+ * Last Modified: 17 09 2022, 11:48:43 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -76,12 +76,12 @@ int qEnqueue(qid_t uQ, const void *pdata);
 int qDequeue(qid_t uQ, void *pdata);
 
 /**
- * @fn      size_t qCount(qid_t uQ);
+ * @fn      int qCount(qid_t uQ);
  * @brief   Number of data slots occupied in a queue.
  * @param   uQ      queue identifier
- * @return  count(size_t) 
+ * @return  count(int) 
  */
-size_t qCount(qid_t uQ);
+int qCount(qid_t uQ);
 
 
 #endif /* utils_queue_h */
