@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 05:06:20 pm
  * -----
- * Last Modified: 16 09 2022, 05:19:00 pm
+ * Last Modified: 17 09 2022, 08:00:17 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -16,26 +16,7 @@
 #ifndef mos_include_h
 #define mos_include_h
 #include <mosconfig.h>
-
-#if MOS_USES(UART)
-    #include <uart.h>
-#endif
-
-#if MOS_USES(I2C)
-    #include <i2c.h>
-#endif
-
-#if MOS_USES(SPI)
-    #include <spi.h>
-#endif
-
-#if MOS_USES(ADC)
-    #include <adc.h>
-#endif
-
-#if MOS_USES(MD13S)
-    #include <md13s.h>
-#endif
+#include <mosprint.h>
 
 void setup(void);
 void loop(void);

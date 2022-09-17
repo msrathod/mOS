@@ -1,0 +1,21 @@
+/** 
+ * @file 	todo.txt
+ * @author 	Mohit Rathod
+ * Created: 17 09 2022, 07:38:59 am
+ * -----
+ * Last Modified: 17 09 2022, 04:03:07 pm
+ * Modified By  : Mohit Rathod
+ * -----
+ * MIT License
+ * https://opensource.org/licenses/MIT
+ * 
+ * @brief todos
+ * 
+ */
+
+add a banner utility in utils.
+banner will use the mosprint fns.
+
+
+
+implement print fn as an alias for uart_puts or lcd_purs depending on the config flag.

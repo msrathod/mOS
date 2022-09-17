@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 10:55:47 am
  * -----
- * Last Modified: 16 09 2022, 05:16:21 pm
+ * Last Modified: 17 09 2022, 04:47:40 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -109,19 +109,32 @@
 /** @} MD13S configuration */
 
 /** 
- * Debug configuration 
+ * Printing configuration 
  * @{
  */
 /**
- * @def     MOS_DEBUG_VERBOSITY
- * @brief   Configures the Debug Verbosity
- * @param   state       0 - Debug functions ignored
- *                      1 - OPrint is enabled
- *                      2 - Dprint is also enabled
- *                      3 - Wprint is also enabled
+ * @def     MOS_VERBOSITY
+ * @brief   Configures the mOS Verbosity
+ * @param   state       0 - All Print fns ignored
+ *                      1 - MPrint is enabled
+ *                      2 - OPrint is also enabled
+ *                      3 - EPrint is also enabled
  */ 
-#define MOS_DEBUG_VERBOSITY     (0)
-/** @} Debug configuration */
+#define MOS_VERBOSITY           (3)
+
+#if MOS_USES(UART) == 0
+#define MOS_VERBOSITY           (0)
+#endif /* MOS_USES(UART) */
+
+/**
+ * @def     MOS_STDIO_CHNL
+ * @brief   Set mOS standard io channel.
+ * @param   state      [1] -> Serial (UART)
+ *                      2  -> LCD (SPI) 
+ */
+#define MOS_STDIO_CHNL             (1)
+
+/** @} Printing configuration */
 
 
 /** 
