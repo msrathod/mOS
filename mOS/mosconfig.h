@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 10:55:47 am
  * -----
- * Last Modified: 17 09 2022, 04:47:40 pm
+ * Last Modified: 17 09 2022, 09:11:49 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -135,6 +135,20 @@
 #define MOS_STDIO_CHNL             (1)
 
 /** @} Printing configuration */
+
+
+/** 
+ * Queue configuration 
+ * @{
+ */
+/**
+ * @def     MOS_MAX_QUEUE
+ * @brief   Configures the max. number of queues supported. 
+ * @param   qmax       { 0, 1, [2], 3, 4 }
+ * @note    [x] => default queue nums.
+ */ 
+#define MOS_MAX_QUEUE           (3)
+/** @} configuration */
 
 
 /** 
