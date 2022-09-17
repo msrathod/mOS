@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 08:10:37 am
  * -----
- * Last Modified: 17 09 2022, 10:31:03 pm
+ * Last Modified: 17 09 2022, 10:43:11 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -22,9 +22,5 @@
  *          used by mos libs to set error codes and print function
  *          to diagnose said erros. 
  */
-extern int *__geterrmos(void);
-
-#define 
-
-
+extern int *const __geterrmos(void);
 #endif /* err_mos_h */
