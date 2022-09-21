@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 07:51:28 am
  * -----
- * Last Modified: 17 09 2022, 05:25:19 pm
+ * Last Modified: 21 09 2022, 04:31:06 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -12,8 +12,8 @@
  * @brief Serial (UART) driver for mOS
  * 
  */
-#ifndef driver_serial_h
-#define driver_serial_h
+#ifndef dev_serial_h
+#define dev_serial_h
 #include <stdint.h>
 
 /**
@@ -49,4 +49,4 @@ int serial_putchar(int c);
 int serial_write(const char *str);
 
 
-#endif /* driver_serial_h */
+#endif /* dev_serial_h */
