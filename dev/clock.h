@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 04:36:36 pm
  * -----
- * Last Modified: 21 09 2022, 05:11:42 pm
+ * Last Modified: 21 09 2022, 09:08:35 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -21,11 +21,13 @@
     (MOS_GET(MCLK_FREQ)!=8) && \
     (MOS_GET(MCLK_FREQ)!=1)
 #define MOS_MCLK_FREQ       (8)
+#warning "Main clock configuration invalid reverting to default freq(8 MHz)."
 #endif
 
 #if (MOS_GET(ACLK_FREQ)!=32768) && \
     (MOS_GET(ACLK_FREQ)!=12000)
 #define MOS_ACLK_FREQ        (12000)
+#warning "Aux. clock configuration invalid reverting to default freq(12 KHz)."
 #endif
 
 /**
@@ -35,16 +37,16 @@
  */
 void clock_init(void);
 /**
- * @fn      int getMCLK(void);
+ * @fn      size_t getMCLK(void);
  * @brief   Get the MCLK value in MHz.
  * @return  Main Clock frequency (MHz)
  */
-int getMCLK(void);
+size_t getMCLK(void);
 /**
- * @fn      int getACLK(void);
+ * @fn      size_t getACLK(void);
  * @brief   Get ACLK freq value in Hz.
  * @return  Auxillary clock frequency (Hz) 
  */
-int getACLK(void);
+size_t getACLK(void);
 
 #endif /* dev_clock_h */

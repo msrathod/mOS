@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 05:38:04 pm
  * -----
- * Last Modified: 18 09 2022, 12:03:56 am
+ * Last Modified: 21 09 2022, 09:46:44 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -31,8 +31,7 @@ typedef unsigned int qid_t;
 typedef struct {
     size_t elen;    /* size of an individual element in bytes. */
     size_t qlen;    /* size of queue(ie the number of elements).
-                     * It has to be a power of 2 ie 2,4,8...etc
-                     */
+                     * It must be a power of 2 ie 2,4,8,..2^n */
     void *buffer;   /* a pointer to buffer that will hold the data. */
 }q_attr_t;
 

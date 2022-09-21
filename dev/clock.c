@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 05:11:58 pm
  * -----
- * Last Modified: 21 09 2022, 08:44:02 pm
+ * Last Modified: 21 09 2022, 08:56:03 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -13,11 +13,12 @@
  * 
  */
 #include <stdint.h>
+#include <stddef.h>
 #include "clock.h"
 #include "clockconfig.h"
 
-static const uint16_t ACLK_FREQ = MOS_GET(MCLK_FREQ);
-static const uint16_t MCLK_FREQ = MOS_GET(MCLK_FREQ);
+static const size_t ACLK_FREQ = MOS_GET(ACLK_FREQ);
+static const size_t MCLK_FREQ = MOS_GET(MCLK_FREQ);
 
 void clock_init()
 {
@@ -29,12 +30,12 @@ void clock_init()
     BCSCTL3 |= CLK_BC3_REG;
 }
 
-int getMCLK()
+size_t getMCLK()
 {
-    return MOS_GET(MCLK_FREQ);
+    return MCLK_FREQ;
 }
 
-int getACLK()
+size_t getACLK()
 {
-    return MOS_GET(ACLK_FREQ);
+    return ACLK_FREQ;
 }
