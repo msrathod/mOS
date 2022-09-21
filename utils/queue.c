@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 09:03:11 pm
  * -----
- * Last Modified: 17 09 2022, 11:58:37 pm
+ * Last Modified: 18 09 2022, 12:04:08 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -120,7 +120,7 @@ int qDequeue(qid_t qID, void *pdata)
 
 int qCount(qid_t qID)
 {
-    int count = 0;
+    int count = -1;
     if (qID < QUEUE_MAX) {
         count = (size_t)(_Q[qID].head - _Q[qID].tail);
     }
