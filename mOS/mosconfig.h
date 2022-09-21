@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 10:55:47 am
  * -----
- * Last Modified: 17 09 2022, 09:11:49 pm
+ * Last Modified: 21 09 2022, 10:28:02 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -48,7 +48,7 @@
  *                      1 - UART Rx/Tx enabled
  *                      0 - UART disabled
  */ 
-#define MOS_CONFIG_UART         (0)
+#define MOS_CONFIG_UART         (1)
 
 #if MOS_USES(UART)
 /**
