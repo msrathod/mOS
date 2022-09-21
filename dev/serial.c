@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 04:22:37 pm
  * -----
- * Last Modified: 21 09 2022, 10:18:23 pm
+ * Last Modified: 21 09 2022, 10:35:23 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -107,6 +107,7 @@ size_t getSerialBaud()
     return SERIAL_BAUD;
 }
 
-#if (MOS_USES(UART) == 1) && (MOS_USES(I2C) == 2)
+/* Add ISR if required and not implemented via I2C driver. */
+#if (MOS_USES(UART) == 1) && (MOS_USES(I2C) != 2)
 #include "serialISR.h"
 #endif
