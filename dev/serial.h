@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 07:51:28 am
  * -----
- * Last Modified: 21 09 2022, 04:31:06 pm
+ * Last Modified: 21 09 2022, 10:14:25 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -47,6 +47,14 @@ int serial_putchar(int c);
  * @return  0 on success, -1 otherwise
  */
 int serial_write(const char *str);
+
+/**
+ * @fn      size_t getSerialBaud(void);
+ * @brief   Get the Serial Baud Rate in hecto bps
+ * @return  Baud rate of the serial module in x100 bps or hbps.
+ */
+size_t getSerialBaud(void);
+
 
 
 #endif /* dev_serial_h */
