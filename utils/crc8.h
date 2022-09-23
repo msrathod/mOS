@@ -3,15 +3,16 @@
  * @author 	Mohit Rathod
  * Created: 22 09 2022, 09:08:15 pm
  * -----
- * Last Modified: 22 09 2022, 09:33:20 pm
+ * Last Modified: 23 09 2022, 10:39:49 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
  * https://opensource.org/licenses/MIT
  * 
- * @brief CRC-8 implementation for frame checking. CDMA2000
- * @note CRC-8 implementation uses 0xFF as initial value and 0x9B as polynomial
- * @see https://crccalc.com/?crc=0x31%200x32%200x33%200x34%200x35%200x36%200x37%200x38%200x39&method=crc8&datatype=hex&outtype=hex
+ * @brief   CRC-8 implementation for frame checking. CDMA2000
+ * @note    CRC-8 implementation uses 0xFF as initial value
+ *          and 0x9B as polynomial.
+ * @see https://crccalc.com/?crc=123456789&method=crc8&datatype=ascii&outtype=0
  * 
  */
 #ifndef utils_crc8_h
