@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 23 09 2022, 08:59:05 pm
  * -----
- * Last Modified: 23 09 2022, 09:19:50 pm
+ * Last Modified: 23 09 2022, 09:21:10 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -55,7 +55,5 @@ void md13s_run(mCmd_t uCmd);
  * @brief   Stops the MD13s module.
  */
 void md13s_stop(void);
-
-
 
 #endif /* dev_md13s_h */
