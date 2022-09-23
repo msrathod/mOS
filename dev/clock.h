@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 04:36:36 pm
  * -----
- * Last Modified: 21 09 2022, 09:08:35 pm
+ * Last Modified: 23 09 2022, 09:49:55 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -13,6 +13,7 @@
  */
 #ifndef dev_clock_h
 #define dev_clock_h
+#include <stddef.h>
 #include <mosconfig.h>
 
 /* If invalid freq configured revert to default value  */
