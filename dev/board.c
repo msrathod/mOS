@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 10:58:37 pm
  * -----
- * Last Modified: 21 09 2022, 11:29:01 pm
+ * Last Modified: 23 09 2022, 08:56:44 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -14,6 +14,8 @@
  */
 #include <mos.h>
 #include <dev/clock.h>
+#include <dev/tlv.h>
+#include <dev/watchdog.h>
 #include <utils/errmos.h>
 #include "board.h"
 #include "boardconfig.h"
@@ -23,6 +25,13 @@
 
 int board_init()
 {
+    /* Disable the watchdog module */
+    watchdog_disable();
+
+    /* Check TLV for calibration data integrity */
+    if (tlv_verify() !=0) {
+        while (1);              /* Hang... Calibration data is corrupted */
+    }
     /* Initialize the system clocks */
     clock_init();
 
@@ -71,12 +80,15 @@ int board_init()
 
     /* Global interrupt enable */
     __enable_interrupt(); 
+    
+    /* Enable the watchdog module */
+    watchdog_enable();
 
     /* Initialize UART device driver */
 #if MOS_USES(UART)
     errmos = serial_init();
     if (errmos != 0) {
-        while(1);               /* Hang if serial driver fails. */
+        while(1);               /* Hang serial driver failed. */
     }
     EPRINT("\nSerial driver ready");
 #endif /* MOS_USES(UART) */
