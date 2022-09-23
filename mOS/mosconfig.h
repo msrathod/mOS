@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 10:55:47 am
  * -----
- * Last Modified: 21 09 2022, 10:28:02 pm
+ * Last Modified: 23 09 2022, 05:16:42 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -36,6 +36,21 @@
  */
 #define MOS_ACLK_FREQ           (12000)
 /** @} */ //CLOCK Configuration
+
+/** 
+ * mOSS configuration 
+ * @{
+ */
+/**
+ * @def     MOS_APP_TASKS
+ * @brief   Configures the max. mOS-Scheduler[mOSS] tasks required by
+ *          the user application.          
+ * @param   taskNum     {0, 1, [2], 3, 4}
+ * @note    This doesn't include the tasks used by mOS itself.
+ */ 
+#define MOS_APP_TASKS           (2)
+
+/** @} mOSS configuration */
 
 /** 
  * UART configuration 
