@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 05:06:20 pm
  * -----
- * Last Modified: 17 09 2022, 08:00:17 am
+ * Last Modified: 24 09 2022, 08:00:55 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -17,6 +17,7 @@
 #define mos_include_h
 #include <mosconfig.h>
 #include <mosprint.h>
+#include <mossch.h>
 
 void setup(void);
 void loop(void);
