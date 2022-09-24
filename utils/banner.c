@@ -18,7 +18,7 @@
 #if MOS_USES(UART)
 #include <dev/serial.h>
 #endif
-#ifdef MOS_USES(MD13S)
+#if MOS_USES(MD13S)
 #include <dev/md13s.h>
 #endif
 
@@ -38,7 +38,7 @@ void mOSgreet()
     tmp = getSerialBaud();
     OPRINT("\nBaud rate:\t", &tmp);OPRINT("00 bps", NULL);
 #endif
-#ifdef MOS_USES(MD13S)
+#if MOS_USES(MD13S)
     tmp = getMD13sFreq();
     OPRINT("\nMD13s PWM freq:\t", &tmp);OPRINT(" Hz", NULL);
 #endif
