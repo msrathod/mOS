@@ -48,7 +48,7 @@
  * @param   taskNum     {0, 1, [2], 3, 4}
  * @note    This doesn't include the tasks used by mOS itself.
  */ 
-#define MOS_APP_TASKS           (2)
+#define MOS_APP_TASKS           (0)
 
 /** @} mOSS configuration */
 
@@ -63,7 +63,7 @@
  *                      1 - UART Rx/Tx enabled
  *                      0 - UART disabled
  */ 
-#define MOS_CONFIG_UART         (1)
+#define MOS_CONFIG_UART         (2)
 
 #if MOS_USES(UART)
 /**
@@ -110,7 +110,7 @@
  * @param   state       1 - MD13S module enabled
  *                      0 - MD13S module disabled
  */ 
-#define MOS_CONFIG_MD13S        (0)
+#define MOS_CONFIG_MD13S        (1)
 
 #if MOS_USES(MD13S)
 /**
