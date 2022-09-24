@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 10:44:58 pm
  * -----
- * Last Modified: 21 09 2022, 10:55:44 pm
+ * Last Modified: 24 09 2022, 10:34:48 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -20,7 +20,9 @@
 
 /* Board LEDs */
 #define LED1        BIT0        /* P1.0 */
+#define LED1_PORT   P1OUT       /* P1 */
 #define LED2        BIT0        /* P1.0 */
+#define LED2_PORT   P1OUT       /* P1 */
 
 /* Sensor attached to board pins */
 #define SENSOR1     BIT3        /* P1.3 */
