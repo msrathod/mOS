@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 23 09 2022, 09:21:29 pm
  * -----
- * Last Modified: 24 09 2022, 03:45:31 pm
+ * Last Modified: 24 09 2022, 05:55:34 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -13,6 +13,7 @@
  * 
  */
 #include <mcu.h>
+#include <mosdefs.h>
 #include <dev/clock.h>
 #include <dev/boardconfig.h>
 #include "md13s.h"
@@ -27,13 +28,14 @@ static const uint16_t PWM_freq = 250;       /* floor */
 #elif MOS_GET(MD13S_FREQ) > 20000
 static const uint16_t PWM_freq = 20000;     /* ceil */
 #warning "MD13S Frequency too high, reverting to highest freq(20 KHz)."
+static_assert(MOS_GET(MCLK_FREQ) != 1, "Error: f_pwm > 10KHz requires a clock freq > 1 MHz. Please configure clock to a higher freq or lower the pwm freq below 10 KHz.");
 #else
 static const uint16_t PWM_freq = MOS_GET(MD13S_FREQ);
+#if MOS_GET(MD13S_FREQ) > 10000
+    static_assert(MOS_GET(MCLK_FREQ) != 1, "Error: f_pwm > 10KHz requires a clock freq > 1 MHz. Please configure clock to a higher freq or lower the pwm freq below 10 KHz.");
+#endif
 #endif
 
-#if MOS_GET(MCLK_FREQ) == 1
-_Static_assert( PWM_freq <= 10000, "Error: f_pwm > 10KHz requires a clock freq > 1 MHz. Please configure clock to a higher freq or lower the pwm freq below 10 KHz.");
-#endif
 
 /* the timer count to generate the desired frequency */
 static const uint16_t PWM_count = MOS_GET(MCLK_FREQ) * 1000000 / PWM_freq;
