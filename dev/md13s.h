@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 23 09 2022, 08:59:05 pm
  * -----
- * Last Modified: 23 09 2022, 09:21:10 pm
+ * Last Modified: 24 09 2022, 02:22:49 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -31,8 +31,9 @@ typedef enum{
 /**
  * @fn      void md13s_init();
  * @brief   Initialize the md13s driver module.
+ * @return  0 on success, -1 otherwise.
  */
-void md13s_init(void);
+int md13s_init(void);
 
 /**
  * @fn      void md13s_setDuty(uint8_t duty);
@@ -55,5 +56,12 @@ void md13s_run(mCmd_t uCmd);
  * @brief   Stops the MD13s module.
  */
 void md13s_stop(void);
+
+/**
+ * @fn      size_t getMD13sFreq(void);
+ * @brief   Get the MD13s PWM frequency in Hz.
+ * @return  Frequency (Hz) 
+ */
+size_t getMD13sFreq(void);
 
 #endif /* dev_md13s_h */
