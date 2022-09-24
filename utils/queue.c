@@ -11,7 +11,7 @@
  * 
  * @brief   Queue implementation (FIFO) to synchronise processes.
  */
-#include <queue.h>
+#include "queue.h"
 #include <mosconfig.h>
 
 typedef unsigned char uchar_t;
