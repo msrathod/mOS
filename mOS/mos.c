@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 24 09 2022, 08:42:04 am
  * -----
- * Last Modified: 24 09 2022, 05:59:04 pm
+ * Last Modified: 24 09 2022, 10:37:50 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -16,17 +16,14 @@
 #include <mcu.h>
 #include <dev/board.h>
 #include <dev/clock.h>
+#include <dev/sysled.h>
 #include <dev/watchdog.h>
 #include <utils/banner.h>
 
-void LED_blink(void)
-{
-    P1OUT ^= 0x01;
-}
 int main(void)
 {
     if (board_init() == 0) {
-        mossAddTask(LED_blink, 10, 50);
+        mossAddTask(sysled_TOGGLE, 10, 50);
         setup();
         mOSgreet();
         while (1) {
