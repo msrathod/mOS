@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 10:58:37 pm
  * -----
- * Last Modified: 23 09 2022, 08:56:44 pm
+ * Last Modified: 24 09 2022, 08:16:44 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -21,6 +21,9 @@
 #include "boardconfig.h"
 #if MOS_USES(UART)
 #include <dev/serial.h>
+#endif
+#if MOS_USES(MD13S)
+#include <dev/md13s.h>
 #endif
 
 int board_init()
@@ -92,5 +95,13 @@ int board_init()
     }
     EPRINT("\nSerial driver ready");
 #endif /* MOS_USES(UART) */
+
+    /* Initialize the mOSS scheduler */
+    errmos = moss_init();
+    EPRINT("\nScheduler initialization");
+#if MOS_USES(MD13S)
+    errmos = md13s_init();
+    EPRINT("\nMD13s initialization");
+#endif
     return 0;
 }
