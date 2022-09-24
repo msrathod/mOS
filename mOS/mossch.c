@@ -33,7 +33,7 @@
 #define TICK_RESOLUTION_MS      10
 
 
-static const uint16_t MaxTASK = 1 + MOS_GET(APP_TASKS);
+#define MaxTASK                 1 + MOS_GET(APP_TASKS)
 static const uint16_t SCH_PERIOD = ((((SYS_CLK_FREQ / 4) / 1000)
                                         * TICK_RESOLUTION_MS) - 1);
 
