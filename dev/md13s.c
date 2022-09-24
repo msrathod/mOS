@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 23 09 2022, 09:21:29 pm
  * -----
- * Last Modified: 23 09 2022, 10:16:27 pm
+ * Last Modified: 24 09 2022, 03:45:31 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -38,8 +38,6 @@ _Static_assert( PWM_freq <= 10000, "Error: f_pwm > 10KHz requires a clock freq >
 /* the timer count to generate the desired frequency */
 static const uint16_t PWM_count = MOS_GET(MCLK_FREQ) * 1000000 / PWM_freq;
 static const uint16_t DUTY_factor = PWM_count / 100;
-#define PWM_PERIOD          (MOS_GET(MCLK_FREQ)*1000000/ _PWM_FREQ_)
-#define DUTY_FACTOR         (PWM_PERIOD / 100)
 /* in % */
 static const uint16_t DEFAULT_Duty = 75;
 static const uint16_t MAX_Duty = 90;
@@ -54,7 +52,7 @@ static const uint16_t MIN_Duty = 10;
 #endif
 
 
-void md13s_init()
+int md13s_init()
 {
     TA1CTL = TACLR + MC_0;                      // Halt timer and clear TAR
     TA1CCR0 = PWM_count - 1;                    // PWM Period @ SMCLK
@@ -62,6 +60,7 @@ void md13s_init()
     TA1CCTL1 &= ~(OUT);                         // set OUT to 0
     TA1CCTL1 = OUTMOD_0;                        // Outputs the OUT bit value
     TA1CTL = TASSEL_2 + ID_0 + MC_1;            // SMCLK, up mode
+    return 0;
 }
 
 void md13s_run(mCmd_t cmd)
@@ -101,4 +100,9 @@ void md13s_setDuty(uint8_t pwm_duty)
         duty = pwm_duty;
     }
     TA1CCR1 = (DUTY_factor * duty) - 1;
+}
+
+size_t getMD13sFreq()
+{
+    return PWM_freq;
 }
