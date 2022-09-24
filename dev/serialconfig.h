@@ -33,7 +33,7 @@
     (MOS_GET(UART_BAUD)!=19200) && \
     (MOS_GET(UART_BAUD)!=9600)
 #define MOS_UART_BAUD       (9600)
-#warning "Invalid UART baud, reverting to default baud(9600 bps).
+#warning "Invalid UART baud, reverting to default baud(9600 bps)"
 #endif
 
 /* Offset for different freq. obatined by fitting data to 
