@@ -47,7 +47,7 @@ void oprint(const char* str, int *ptr)
 
 void eprint(const char* str)
 {
-    OS_printR(_strn);
+    OS_printR(str);
     if (errmos != 0) {
         OS_printR(" FAILURE [0x");
         itohex(errmos, _strn);
