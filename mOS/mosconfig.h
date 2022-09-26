@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 10:55:47 am
  * -----
- * Last Modified: 23 09 2022, 10:14:16 pm
+ * Last Modified: 26 09 2022, 02:47:04 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -163,8 +163,31 @@
  * @note    [x] => default queue nums.
  */ 
 #define MOS_MAX_QUEUE           (3)
-/** @} configuration */
+/** @} Queue configuration */
 
+/** 
+ * State Machine Framework(SMF) configuration 
+ * @{
+ */
+/**
+ * @def     MOS_SMF_MAX_EVENTS
+ * @brief   Configures the max. number of events supported 
+ *          by the framework in a state machine.
+ * @param   eMax       { 0, 1, 2, 3, 4, [5], 6, 7, 8}
+ * @note    [x] => default event max value.
+ */ 
+#define MOS_SMF_MAX_EVENTS      (5)
+
+/**
+ * @def     MOS_SMF_MAX_STATES
+ * @brief   Configures the max. number of events supported 
+ *          by the framework in a state machine.
+ * @param   eMax       { 0, 1, 2, 3, 4, [5], 6, 7, 8}
+ * @note    [x] => default event max value.
+ */ 
+#define MOS_SMF_MAX_STATES      (5)
+
+/** @} SMF configuration */
 
 /** 
  *  configuration 
