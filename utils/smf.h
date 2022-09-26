@@ -3,22 +3,32 @@
  * @author 	Mohit Rathod
  * Created: 24 09 2022, 10:49:14 pm
  * -----
- * Last Modified: 24 09 2022, 11:21:04 pm
+ * Last Modified: 26 09 2022, 03:55:32 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
  * https://opensource.org/licenses/MIT
  * 
- * @brief   State Machine Framework(SMF) is an application agnostic
- *          framework that provides an easy way to integrate state-
- *          machine into an mOS application.
+ * @brief   State Machine Framework(SMF) API
+ *          SMF is an application agnostic framework that provides
+ *          an easy way to integrate state-machine into an mOS app.
  */
 #ifndef utils_state_machine_framework_h
 #define utils_state_machine_framework_h
 #include <stdint.h>
+#include <stddef.h>
+#include <mosconfig.h>
 
+#if MOS_GET(SMF_MAX_EVENTS)
+static const uint16_t MaxEvents = MOS_GET(SMF_MAX_EVENTS);
+#else
 static const uint16_t MaxEvents = 5;
+#endif
+#if MOS_GET(SMF_MAX_STATES)
+static const uint16_t MaxStates = MOS_GET(SMF_MAX_STATES);
+#else
 static const uint16_t MaxStates = 5;
+#endif
 
 /**
  * @brief   Event data type
@@ -70,29 +80,58 @@ typedef struct
 {
     event_t event;       /* event */
     pAction_t action;    /* eventHandler for the above event */
-} eventAction_t;
+} evAction_t;
 
 /**
  * @brief   State Transition data structure, lists all possible event-action
- *          pair for a given state.
+ *          pair for a particular state.
  */
 typedef struct
 {
-    eventAction_t *pAction;     /* Pointer to action table for a given state */
-    int len;                    /* length of eventAction list for a state */
+    evAction_t *pAction;    /* Pointer to evAction Array for a given state */
+    size_t len;             /* Number of valid evAction pair for the state */
 } stateTransition_t;
 
 /**
- * @brief   State Machine Data structure
+ * @fn      int SMF_init(state_t iState);
+ * @brief   Initialize the State Machine Framework, also sets up the initial
+ *          state of the generic state machine.
+ * @param   iState  initial state of the state machine to be implemented.
+ * @return  0 on success, -1 otherwise
  */
-typedef struct state_machine
-{
-    stateTransition_t state[MaxStates];
-} stateMachine_t;
+int SMF_init(state_t iState);
 
+/**
+ * @fn      int SMF_addState(state_t uState, stateTransition_t *ptr);
+ * @brief   Add a state and its transition rules to the SM Framework
+ * @param   uState  the state to add.
+ * @param   ptr     pointer to state transition table of the above state. 
+ * @return  0 on success, -1 otherwise
+ */
+int SMF_addState(state_t uState, stateTransition_t *ptr);
 
-int SMF_create( state_t iState, stateMachine_t *pstateMachine );
-void SMF_Run(void);
+/**
+ * @fn      state_t SMF_getState(void);
+ * @brief   Fetches the current state of the State Machine implemented
+ *          via the SM Framework.
+ * @return  state 
+ */
 state_t SMF_getState(void);
+
+/**
+ * @fn      int SMF_putEvent(const uint8_t *pEvent);
+ * @brief   Add an event on the SM Framework event queue.
+ * @param   pEvent Event to add
+ * @return  0 on success, -1 otherwise
+ */
 int SMF_putEvent(const uint8_t *pEvent);
+
+/**
+ * @fn      void SMF_Run(void);
+ * @brief   SM Manager for the SM Framework. This must be
+ *          called upon periodically. It performs the transition
+ *          of the State Machine based on events from the event
+ *          queue.
+ */
+void SMF_Run(void);
 #endif /* utils_state_machine_framework_h */
