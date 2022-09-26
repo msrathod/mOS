@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 26 09 2022, 01:49:19 pm
  * -----
- * Last Modified: 26 09 2022, 03:41:25 pm
+ * Last Modified: 26 09 2022, 04:01:45 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -17,7 +17,7 @@
 
 typedef struct
 {
-    pAction_t action[MaxStates][MaxEvents];
+    pAction_t action[STATESMAX][EVENTSMAX];
 } stateMachine_t;
 
 
