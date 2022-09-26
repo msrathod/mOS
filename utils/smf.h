@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 24 09 2022, 10:49:14 pm
  * -----
- * Last Modified: 26 09 2022, 03:55:32 pm
+ * Last Modified: 26 09 2022, 04:01:35 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -20,14 +20,14 @@
 #include <mosconfig.h>
 
 #if MOS_GET(SMF_MAX_EVENTS)
-static const uint16_t MaxEvents = MOS_GET(SMF_MAX_EVENTS);
+#define EVENTSMAX               MOS_GET(SMF_MAX_EVENTS)
 #else
-static const uint16_t MaxEvents = 5;
+#define EVENTSMAX               (5)
 #endif
 #if MOS_GET(SMF_MAX_STATES)
-static const uint16_t MaxStates = MOS_GET(SMF_MAX_STATES);
+#define STATESMAX               MOS_GET(SMF_MAX_STATES)
 #else
-static const uint16_t MaxStates = 5;
+#define STATESMAX               (5)
 #endif
 
 /**
@@ -45,7 +45,7 @@ typedef enum EventEnum
     EVENT_5,
     EVENT_6,
     EVENT_7,
-    MAX_Events = EVENT_0 + MaxEvents
+    MAX_Events = EVENT_0 + EVENTSMAX
 } event_t;
 
 /**
@@ -63,7 +63,7 @@ typedef enum StateEnum
     STATE_5,
     STATE_6,
     STATE_7,
-    MAX_States = STATE_0 + MaxStates
+    MAX_States = STATE_0 + STATESMAX
 } state_t;
 
 /**
