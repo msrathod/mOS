@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 28 09 2022, 02:53:01 pm
  * -----
- * Last Modified: 06 10 2022, 05:25:39 pm
+ * Last Modified: 06 10 2022, 10:45:24 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -52,10 +52,15 @@ int SMF_init(state_t iState, uint8_t stateNUM, uint8_t evnetNUM)
 int SMF_addState(state_t uState, stateTransition_t *ptr)
 {
     int ret = -1;
-    if ((ptr != NULL) && (uState >= STATE_0) && (uState < MAX_States)) {
+    if ((ptr != NULL) && (uState >= STATE_0) && (uState < pSM->stateMax)) {
         int len = ptr->len;
+        event_t uEvent;
         while (len--) {
-            pSM->action[(uState - STATE_0) * pSM->eventMax + ((ptr->pAction+len)->event - EVENT_0)] = (ptr->pAction+len)->action;
+            uEvent = (ptr->pAction+len)->event;
+            if ((uEvent >= EVENT_0) && (uEvent < pSM->eventMax)) {
+                pSM->action[(uState - STATE_0) * pSM->eventMax +
+                            (uEvent - EVENT_0)] = (ptr->pAction+len)->action;
+               }
         }
         ret = 0;
     }
