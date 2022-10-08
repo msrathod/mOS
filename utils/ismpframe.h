@@ -3,13 +3,13 @@
  * @author 	Mohit Rathod
  * Created: 08 10 2022, 03:44:44 pm
  * -----
- * Last Modified: 08 10 2022, 05:44:35 pm
+ * Last Modified: 08 10 2022, 09:06:07 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
  * https://opensource.org/licenses/MIT
  * 
- * @brief   i2c Server Message Protocol(ISMP) defines
+ * @brief   i2c Server Message Protocol(ISMP) definition.
  *  
  *  ISMP frame format
  * 
