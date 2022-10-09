@@ -36,22 +36,19 @@
 #define ISMP_SVC_HEADER         (0x80)
 #define ISMP_RSP_HEADER         (0x55)
 
-typedef struct ismpframe
+typedef union
 {
-    union
+    struct
     {
-        struct
-        {
-            uint8_t Header;
-            uint8_t Len;
-            uint8_t Port;
-            uint8_t Data[MAX_PAYLOAD_LEN - 1];
-            uint8_t Checksum;
-        };
-        uint8_t buf[MAX_PACKET_LEN];
+        uint8_t Header;
+        uint8_t Len;
+        uint8_t Port;
+        uint8_t Data[MAX_PAYLOAD_LEN - 1];
+        uint8_t Checksum;
     };
+    uint8_t buf[MAX_PACKET_LEN];
 }ismpframe_t;
-
+ 
 typedef enum{
     FRAME_OK                = 0x00,
     FRAME_OK_SRVC_BUSY,
