@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 08 10 2022, 03:44:44 pm
  * -----
- * Last Modified: 08 10 2022, 09:06:07 pm
+ * Last Modified: 10 10 2022, 08:54:21 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -47,7 +47,7 @@ typedef union
         uint8_t Checksum;
     };
     uint8_t buf[MAX_PACKET_LEN];
-}ismpframe_t;
+} ISMPframe_t;
  
 typedef enum{
     FRAME_OK                = 0x00,
@@ -62,6 +62,18 @@ typedef enum{
     UNKNOWN_ERROR,
     UNKNOWN_RESP,
     ISMP_VERSION            = 0xC0
-}ISMPresponse_t;
+} ISMPresponse_t;
+
+typedef enum port_enum{
+    PORT_0 = 0xA0,   // provides service 0
+    PORT_1,          // provides service 1
+    PORT_2,          // provides service 2
+    PORT_3,          // provides service 3
+    PORT_4,          // provides service 4
+    PORT_5,          // provides service 5
+    PORT_6,          // provides service 6
+    PORT_7,          // provides service 7
+    PORT_MAX
+} ISMPport_t;
 
 #endif /* utils_ismpframe_h */
