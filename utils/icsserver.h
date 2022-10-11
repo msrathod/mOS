@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 10 10 2022, 09:26:16 pm
  * -----
- * Last Modified: 10 10 2022, 09:58:45 pm
+ * Last Modified: 11 10 2022, 02:18:45 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -64,7 +64,7 @@ int ICS_addService(srvfn_t pService, const uint16_t len, void *pbuf, ISMPport_t 
 int ICS_delService(ISMPport_t portID);
 
 /**
- * @brief   Server service dispatcher.
+ * @brief   ICS Server service dispatcher.
  *          When a service (function) is due to run, this function will run it.
  *          This function must be called (repeatedly) from the main loop.
  * @param   none.
