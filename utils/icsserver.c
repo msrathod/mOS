@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 10 10 2022, 09:56:18 pm
  * -----
- * Last Modified: 11 10 2022, 10:35:55 pm
+ * Last Modified: 14 10 2022, 09:29:40 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -17,6 +17,7 @@
 #include <utils/crc8.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <string.h>
 
 /* Service format */
 typedef struct
@@ -110,9 +111,38 @@ void ICS_run()
 
 static void stateCallback(void)
 {
+	switch (state)
+	{
+	case(BAD_FRAME):
+		/* reset state */
+		state = HEADER_MODE;
+		break;
+	
+	default:
+		break;
+	}
 
 }
-static void txCallback(volatile uint8_t *txdata);
+
+static void txCallback(volatile uint8_t *txdata)
+{
+	switch(state)
+	{
+		case(SRVC_RSP_MODE):
+			state = HEADER_MODE;
+			*txdata = i2csrvc[rsp_port - PORT_0].rsp;
+			break;
+		case(PKT_RSP_MODE):
+			state = HEADER_MODE;
+			*txdata = response;
+			response = UNKNOWN_RESP;
+			break;
+		default:
+			/* no operation */
+			break;
+	}
+}
+
 static void rxCallback(const uint8_t recvd)
 {
 	static int idx = 0;
@@ -139,13 +169,81 @@ static void rxCallback(const uint8_t recvd)
 				state = BAD_FRAME;
 				response = HEADER_ERROR;
 			}
-		break;
+			break;
 		case(LENGTH_MODE):
-
+			if ((rxdata > 0) && (rxdata <= MAX_PAYLOAD_LEN)) {
+				state = PORT_MODE;
+				response = ISMP_ONGOING;
+				packet.Len = rxdata;
+				idx = rxdata;
+			}
+			else {
+				state = BAD_FRAME;
+				response = FRAME_SIZE_ERROR;
+			}
+			break;
+		case(PORT_MODE):
+			if (isValidPort(rxdata)) {
+				state = DATA_MODE;
+				packet.Port = rxdata;
+				/* if no service registered at this portID */
+				if (i2csrvc[packet.Port - PORT_0].pService == NULL) {
+					state = BAD_FRAME;
+					response = INVALID_SRVC;
+				}
+				/* if not enough parameters for the service at this portID */
+				else if (i2csrvc[packet.Port - PORT_0].len != (packet.Len - 1)) {
+					state = BAD_FRAME;
+					response = INVALID_PARAMS;
+				}
+			}
+			else {
+				state = BAD_FRAME;
+				response = INVALID_PORT;
+			}
+			break;
+		case(DATA_MODE):
+			if (idx > 1) {
+				packet.Data[packet.Len - idx] = rxdata;
+				idx--;
+				break;
+			}
+			state = CRC_MODE;
+		case(CRC_MODE):
+			/* Last byte in the packet is the checksum */
+			packet.buf[packet.Len + 2] = rxdata;
+			if (computeFCS(packet.buf, (packet.Len+3))) {
+				/* Bad packet let the host know and discard the frame. */
+				state = BAD_FRAME;
+				response = CHECKSUM_ERROR;
+			}
+			else {
+				state = HEADER_MODE;
+				response = FRAME_OK;
+				pushpacket();
+			}
+			break;
+		case(BAD_FRAME):
+		default:
+			/* no_operation */
 		break;
 	}
 }
-static void pushpacket(void);
+static void pushpacket(void)
+{
+	if (i2csrvc[packet.Port - PORT_0].run != 0) {
+		response = FRAME_OK_SRVC_BUSY;
+	}
+	else {
+		i2csrvc[packet.Port - PORT_0].run++;
+		/* check for null buffers in param */
+		if (i2csrvc[packet.Port - PORT_0].param) {
+			memcpy(i2csrvc[packet.Port - PORT_0].param, packet.Data, i2csrvc[packet.Port - PORT_0].len);
+		}
+		response = FRAME_OK;
+	}
+}
+
 static bool isValidPort(ISMPport_t portNum)
 {
 	bool ret = false;
