@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 16 09 2022, 10:55:47 am
  * -----
- * Last Modified: 26 09 2022, 02:47:04 pm
+ * Last Modified: 11 10 2022, 01:49:45 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -87,7 +87,7 @@
  *                      1 - I2C Master mode enabled
  *                      0 - I2C module disabled
  */ 
-#define MOS_CONFIG_I2C          (0)
+#define MOS_CONFIG_I2C          (2)
 
 #if MOS_USES(I2C)
 /**
