@@ -39,5 +39,5 @@ void i2cslave_init(void (*State_Callback)(),
 }
 
 #if MOS_USES(I2C) == 2
-#include <i2cslaveISR.h>
+#include <dev/i2cslaveISR.h>
 #endif

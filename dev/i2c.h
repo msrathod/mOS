@@ -18,7 +18,7 @@
 #include <mosconfig.h>
 
 #if MOS_USES(I2C) == 2
-#include <i2cslave.h>
+#include <dev/i2cslave.h>
 #elif MOS_USES(I2C) == 1
 #include <i2cmaster.h>
 #endif
