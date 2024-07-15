@@ -47,6 +47,8 @@ uint8_t var_p2[1];
 #define ST_CLOSING    STATE_3
 #define ST_STOPPED    STATE_4
 
+stateTransition_t Transition;
+
 state_t openEvent_Handler(void)
 {
   md13s_run(MD_CW);
@@ -127,6 +129,31 @@ void setup()
     
     /* event action pair for ST_STOPPED case */
     static evAction_t eAST_Stopped[] ={ {EV_FSM_RST, resetEvent_Handler} };
+
+    errmos = SMF_init(ST_CLOSE);
+    EPRINT("\nState Machine Initialization");
+
+    Transition.pAction = eAST_Close;
+    Transition.len = ARRAY_SIZE(eAST_Close);
+    errmos = SMF_addState(ST_CLOSE, &Transition);
+    
+    Transition.pAction = eAST_Open;
+    Transition.len = ARRAY_SIZE(eAST_Open);
+    errmos = SMF_addState(ST_OPEN, &Transition);
+    
+    Transition.pAction = eAST_Opening;
+    Transition.len = ARRAY_SIZE(eAST_Opening);
+    errmos = SMF_addState(ST_OPENING, &Transition);
+
+    Transition.pAction = eAST_Closing;
+    Transition.len = ARRAY_SIZE(eAST_Closing);
+    errmos = SMF_addState(ST_CLOSING, &Transition);
+    
+    Transition.pAction = eAST_Stopped;
+    Transition.len = ARRAY_SIZE(eAST_Stopped);
+    errmos = SMF_addState(ST_STOPPED, &Transition);
+    
+    mossAddTask(SMF_Run, 20, 50);
 }
 
 void loop()
