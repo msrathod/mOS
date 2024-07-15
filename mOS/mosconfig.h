@@ -26,7 +26,7 @@
  * @param   freq[MHz] || 16, 12, [8], 1 ||
  * @note    [x] => default frequency.
  */
-#define MOS_MCLK_FREQ           (1)
+#define MOS_MCLK_FREQ           (8)
 
 /**
  * @def     MOS_ACLK_FREQ
@@ -48,7 +48,7 @@
  * @param   taskNum     {0, 1, [2], 3, 4}
  * @note    This doesn't include the tasks used by mOS itself.
  */ 
-#define MOS_APP_TASKS           (0)
+#define MOS_APP_TASKS           (1)
 
 /** @} mOSS configuration */
 

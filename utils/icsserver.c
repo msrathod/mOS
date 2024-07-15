@@ -93,6 +93,7 @@ int ICS_delService(ISMPport_t portID)
 		i2csrvc[portID - PORT_0].run = 0;
 		ret = 0;
 	}
+	return ret;
 }
 
 void ICS_run()
