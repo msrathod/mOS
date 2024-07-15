@@ -88,7 +88,7 @@ typedef struct
  * @param   iState  initial state of the state machine to be implemented.
  * @return  0 on success, -1 otherwise
  */
-int SMF_init(state_t iState, uint8_t stateNUM, uint8_t evnetNUM);
+int dSMF_init(state_t iState, uint8_t stateNUM, uint8_t evnetNUM);
 
 /**
  * @fn      int SMF_addState(state_t uState, stateTransition_t *ptr);
@@ -97,7 +97,7 @@ int SMF_init(state_t iState, uint8_t stateNUM, uint8_t evnetNUM);
  * @param   ptr     pointer to state transition table of the above state. 
  * @return  0 on success, -1 otherwise
  */
-int SMF_addState(state_t uState, stateTransition_t *ptr);
+int dSMF_addState(state_t uState, stateTransition_t *ptr);
 
 /**
  * @fn      state_t SMF_getState(void);
@@ -105,7 +105,7 @@ int SMF_addState(state_t uState, stateTransition_t *ptr);
  *          via the SM Framework.
  * @return  state 
  */
-state_t SMF_getState(void);
+state_t dSMF_getState(void);
 
 /**
  * @fn      int SMF_putEvent(const uint8_t *pEvent);
@@ -113,7 +113,7 @@ state_t SMF_getState(void);
  * @param   pEvent Event to add
  * @return  0 on success, -1 otherwise
  */
-int SMF_putEvent(const uint8_t *pEvent);
+int dSMF_putEvent(const uint8_t *pEvent);
 
 /**
  * @fn      void SMF_Run(void);
@@ -122,5 +122,5 @@ int SMF_putEvent(const uint8_t *pEvent);
  *          of the State Machine based on events from the event
  *          queue.
  */
-void SMF_Run(void);
+void dSMF_Run(void);
 #endif /* utils_state_machine_framework_h */

@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 28 09 2022, 02:53:01 pm
  * -----
- * Last Modified: 06 10 2022, 10:45:24 pm
+ * Last Modified: 15 07 2024, 02:25:42 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -14,6 +14,7 @@
  *          an easy way to integrate state-machine into an mOS app.
  */
 #include "smfdyn.h"
+#include <stdlib.h>
 #include <utils/queue.h>
 
 typedef struct
@@ -34,7 +35,7 @@ static stateMachine_t *pSM;
 static int SMF_getEvent(qid_t qID, event_t *pEvent);
 static state_t SMF_transition(state_t uState, event_t uEvent);
 
-int SMF_init(state_t iState, uint8_t stateNUM, uint8_t evnetNUM)
+int dSMF_init(state_t iState, uint8_t stateNUM, uint8_t evnetNUM)
 {
     q_attr_t attr = {
         .elen = (event_qMEM[0]),
@@ -49,7 +50,7 @@ int SMF_init(state_t iState, uint8_t stateNUM, uint8_t evnetNUM)
     return q_init(&event_qID, &attr);
 }
 
-int SMF_addState(state_t uState, stateTransition_t *ptr)
+int dSMF_addState(state_t uState, stateTransition_t *ptr)
 {
     int ret = -1;
     if ((ptr != NULL) && (uState >= STATE_0) && (uState < pSM->stateMax)) {
@@ -67,17 +68,17 @@ int SMF_addState(state_t uState, stateTransition_t *ptr)
     return ret;
 }
 
-state_t SMF_getState()
+state_t dSMF_getState()
 {
     return _smState;
 }
 
-int SMF_putEvent(const uint8_t *pEvent)
+int dSMF_putEvent(const uint8_t *pEvent)
 {
     return qEnqueue(event_qID, pEvent);
 }
 
-void SMF_Run()
+void dSMF_Run()
 {
     event_t uEvent;
     if (SMF_getEvent(event_qID, &uEvent) == 0) {
