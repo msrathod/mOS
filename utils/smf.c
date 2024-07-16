@@ -44,14 +44,13 @@ int SMF_init(state_t iState)
     return q_init(&event_qID, &attr);
 }
 
-int SMF_addState(state_t uState, stateTransition_t *ptr)
+int SMF_addState(state_t uState, evAction_t *ptr, size_t len)
 {
     int ret = -1;
     if ((ptr != NULL) && (uState >= STATE_0) && (uState < MAX_States)) {
-        int len = ptr->len;
         while (len--) {
-            SM.action[uState - STATE_0][((ptr->pAction+len)->event) - EVENT_0] 
-                                                = (ptr->pAction+len)->action;
+            SM.action[uState - STATE_0][((ptr+len)->event) - EVENT_0] 
+                                        = (ptr+len)->action;
         }
         ret = 0;
     }
