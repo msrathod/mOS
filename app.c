@@ -48,7 +48,6 @@ const uint16_t debounce_period = ((((MOS_GET(MCLK_FREQ) * 1000)/4)*DEBOUNCE_TIME
 #define ST_CLOSING    STATE_3
 #define ST_STOPPED    STATE_4
 
-stateTransition_t Transition;
 
 state_t openEvent_Handler(void)
 {
@@ -103,33 +102,33 @@ void setup()
     EPRINT("\nAdding service to port 2 of ICS server.");
 
         /* event action pair for ST_OPEN case */
-    static evAction_t eAST_Open[] = {
+    evAction_t eAST_Open[] = {
                                   {EV_CLOSE, closeEvent_Handler},
                                   {EV_STOP, stopEvent_Handler}
                                 };
 
     /* event action pair for ST_CLOSE case */
-    static evAction_t eAST_Close[] =  {
+    evAction_t eAST_Close[] =  {
                                     {EV_OPEN, openEvent_Handler},
                                     {EV_STOP, stopEvent_Handler}
                                   };
     
     /* event action pair for ST_OPENING case */
-    static evAction_t eAST_Opening[] ={
+    evAction_t eAST_Opening[] ={
                                     {EV_LIMIT, limit_openEvent_Handler},
                                     {EV_CLOSE, closeEvent_Handler},
                                     {EV_STOP, stopEvent_Handler}
                                   };
     
     /* event action pair for ST_CLOSING case */
-    static evAction_t eAST_Closing[] ={
+    evAction_t eAST_Closing[] ={
                                     {EV_LIMIT, limit_closeEvent_Handler},
                                     {EV_OPEN, openEvent_Handler},
                                     {EV_STOP, stopEvent_Handler}
                                   };
     
     /* event action pair for ST_STOPPED case */
-    static evAction_t eAST_Stopped[] ={ {EV_FSM_RST, resetEvent_Handler} };
+    evAction_t eAST_Stopped[] ={ {EV_FSM_RST, resetEvent_Handler} };
 
     errmos = SMF_init(ST_CLOSE);
     EPRINT("\nState Machine Initialization");
