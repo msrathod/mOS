@@ -17,10 +17,6 @@
 #include <utils/errmos.h>
 #include <utils/icsserver.h>
 
-/* Desired debouncing time in ms */
-#define DEBOUNCE_TIME_MS    10
-/* Debounce period register value to be fed to TACCRx */
-const uint16_t debounce_period = ((((MOS_GET(MCLK_FREQ) * 1000)/4)*DEBOUNCE_TIME_MS) - 1);
 
 // Service functions
 uint8_t srvc_port0(void *pargs);
@@ -30,9 +26,14 @@ uint8_t srvc_port2(void *pargs);
 uint8_t var_p1[1];
 uint8_t var_p2[1];
 
+//sunroof state machine setup
 #include <utils/smf.h>
 #include <dev/md13s.h>
 
+/* Desired debouncing time in ms */
+#define DEBOUNCE_TIME_MS    10
+/* Debounce period register value to be fed to TACCRx */
+const uint16_t debounce_period = ((((MOS_GET(MCLK_FREQ) * 1000)/4)*DEBOUNCE_TIME_MS) - 1);
 /* Map sunroof events to StateMachine */
 #define EV_OPEN       EVENT_0
 #define EV_CLOSE      EVENT_1
@@ -133,25 +134,20 @@ void setup()
     errmos = SMF_init(ST_CLOSE);
     EPRINT("\nState Machine Initialization");
 
-    Transition.pAction = eAST_Close;
-    Transition.len = ARRAY_SIZE(eAST_Close);
-    errmos = SMF_addState(ST_CLOSE, &Transition);
+    errmos = SMF_addState(ST_CLOSE, eAST_Close, ARRAY_SIZE(eAST_Close));
+    EPRINT("\nAdding ST_CLOSE to SMF");
     
-    Transition.pAction = eAST_Open;
-    Transition.len = ARRAY_SIZE(eAST_Open);
-    errmos = SMF_addState(ST_OPEN, &Transition);
+    errmos = SMF_addState(ST_OPEN, eAST_Open, ARRAY_SIZE(eAST_Open));
+    EPRINT("\nAdding ST_OPEN to SMF");
     
-    Transition.pAction = eAST_Opening;
-    Transition.len = ARRAY_SIZE(eAST_Opening);
-    errmos = SMF_addState(ST_OPENING, &Transition);
+    errmos = SMF_addState(ST_OPENING, eAST_Opening, ARRAY_SIZE(eAST_Opening));
+    EPRINT("\nAdding ST_OPENING to SMF");
 
-    Transition.pAction = eAST_Closing;
-    Transition.len = ARRAY_SIZE(eAST_Closing);
-    errmos = SMF_addState(ST_CLOSING, &Transition);
+    errmos = SMF_addState(ST_CLOSING, eAST_Closing, ARRAY_SIZE(eAST_Closing));
+    EPRINT("\nAdding ST_CLOSING to SMF");
     
-    Transition.pAction = eAST_Stopped;
-    Transition.len = ARRAY_SIZE(eAST_Stopped);
-    errmos = SMF_addState(ST_STOPPED, &Transition);
+    errmos = SMF_addState(ST_STOPPED, eAST_Stopped, ARRAY_SIZE(eAST_Stopped));
+    EPRINT("\nAdding ST_STOPPED to SMF");
     
     mossAddTask(SMF_Run, 20, 50);
 }
@@ -220,6 +216,7 @@ __attribute__ ((interrupt(TIMER0_A1_VECTOR))) void Timer0A1_ISR(void)
             TA0CCTL1 &= ~CCIE;
             if((P1IN & BIT3)==0)
             {
+              /* Push a reset event on the SM queue */
                 evnt = EV_FSM_RST;
                 SMF_putEvent(&evnt);
             }
