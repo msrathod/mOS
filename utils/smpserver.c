@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 18 07 2024, 08:19:07 am
  * -----
- * Last Modified: 18 07 2024, 09:32:05 am
+ * Last Modified: 18 07 2024, 11:26:33 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -15,9 +15,29 @@
 #include <utils/smpserver.h>
 #include <utils/slip.h>
 
-static SLIP_PACKET_t _SLP_packet;
-static SLIP_PACKET_t *p_SLP_packet;
-static uint8_t _SLP_maxlen;
+typedef enum
+{
+  PENDING     = (uint8_t)0xFF,
+  COMPLETE    = (uint8_t)0x0F,
+  EMPTY       = (uint8_t)0xF0,
+  STATUS_ERR
+}pkt_status_t;
+
+typedef struct
+{
+  uint8_t idx;                /** Buffer index(length) for 
+                                  ongoing package */
+  pkt_status_t pkt_status;    /*  Packet status */
+  SLIPframe_t *pkt; 
+}SLIP_PACKET_t;
+
+
+/**
+ * @brief SLIP packet structure
+ */
+
+static SLIPframe_t _SLPpkt;
+static SLIP_PACKET_t SLP;
 
 static void _flush_packet(SLIP_PACKET_t *pckt);
 
@@ -25,33 +45,19 @@ static void _flush_packet(SLIP_PACKET_t *pckt)
 {
   pckt->pkt_status = EMPTY;
   pckt->idx = 0;
-  memset(pckt->buf, 0, _SLP_maxlen);
+  memset(pckt->pkt->buf, 0, MAX_PACKET_LEN);
 }
 
 
 /**
  * @brief SFMP_Manager_init:
  *        Function to initiailize the SFMP packet manager.
- * @param[in] buf - memory buffer to store the SLIP packet
- *                  before processing it.
- * @param[in] len - length of the above buffer(is also equal
- *                  to the max length of the SLIP packet.)
  * @return 0 on SUCCESS or -1 on FAILURE.      
  */
-int sfmp_init(uchar_t *buf, uint8_t len)
+int smp_init()
 {
-  int ret = -1;
-  if( buf != NULL )
-  {
-    _SLP_packet.buf = buf;
-    _SLP_packet.idx = 0;
-    _SLP_packet.pkt_status = EMPTY;
-    _SLP_maxlen = len;
-
-    p_SLP_packet = &_SLP_packet;
-    ret = 0;
-  }
-  return ret;
+    SLP.pkt = &_SLPpkt;
+    _flush_packet(&SLP);
 }
 
 /**
@@ -60,26 +66,42 @@ int sfmp_init(uchar_t *buf, uint8_t len)
  *            them accordingly. Must be run periodically.
  * @return None.
  */
-void sfmp_manager()
+void smp_manager()
 {
   uint8_t recvd;
-  recvd = p_SLP_packet->idx;
+  recvd = SLP.idx;
 
-  if( recvd < _SLP_maxlen )
+  if( recvd < MAX_PACKET_LEN )
   {
-    recvd += slip_read( &(p_SLP_packet->buf[recvd]), _SLP_maxlen - recvd,
-                               &(p_SLP_packet->pkt_status));
-    p_SLP_packet->idx = recvd;
+    
+    recvd += slip_read( &(SLP.pkt->buf[recvd]), MAX_PACKET_LEN - recvd,
+                               &(SLP.pkt_status));
+    SLP.idx = recvd;
   }
 
-  if((p_SLP_packet->pkt_status == COMPLETE)||(recvd == _SLP_maxlen))
+  if((SLP.pkt_status == COMPLETE)||(recvd == MAX_PACKET_LEN))
   {      
-    if(packet_processor(p_SLP_packet) == SUCCESS)
+    if(packet_processor(&SLP) == SUCCESS)
     {
-      slip_write(p_SLP_packet->buf, p_SLP_packet->idx);
+      slip_write(SLP.pkt->buf, SLP.idx);
     }
-    _flush_packet(p_SLP_packet);  
+    _flush_packet(&SLP);  
   }  
+}
+
+static void packet_processor(SLIP_PACKET_t *packet)
+{
+	if (_srvc[packet->pkt->Port - PORT_0].run != 0) {
+		response = FRAME_OK_SRVC_BUSY;
+	}
+	else {
+		_srvc[packet->pkt->Port - PORT_0].run++;
+		/* check for null buffers in param */
+		if (_srvc[packet->pkt->Port - PORT_0].param) {
+			memcpy(_srvc[packet->pkt->Port - PORT_0].param, packet.Data, _srvc[packet.Port - PORT_0].len);
+		}
+		response = FRAME_OK;
+	}
 }
 
 /* Service format */
