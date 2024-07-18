@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 07 2024, 06:43:21 pm
  * -----
- * Last Modified: 18 07 2024, 07:30:37 am
+ * Last Modified: 18 07 2024, 10:34:21 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -19,24 +19,6 @@
 #ifndef utils_slip_h
 #define utils_slip_h
 #include<stdint.h>
-
-typedef enum
-{
-  PENDING     = (uint8_t)0xFF,
-  COMPLETE    = (uint8_t)0x0F,
-  EMPTY       = (uint8_t)0xF0,
-  STATUS_ERR
-}pkt_status_t;
-
-/**
- * @brief SLIP packet structure
- */
-typedef struct {
-  uchar_t* buf;               /* SLIP packet buffer */
-  uint8_t idx;                /* Buffer index(length) for incomplete(complete) package */
-  //int8_t len;                 // packet length (0 to 127)
-  pkt_status_t pkt_status;    /* Packet status */
-}SLIP_PACKET_t;
 
 /**
  * @brief SLIP special character code 
