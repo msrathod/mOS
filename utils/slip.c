@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 07 2024, 07:54:54 pm
  * -----
- * Last Modified: 18 07 2024, 07:09:25 am
+ * Last Modified: 18 07 2024, 07:27:21 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -22,7 +22,7 @@
  * @param[in] len - length of packet
  * @return None
  */
-void slip_send_packet(uchar_t *p, int8_t len)
+void slip_write(uchar_t *p, int8_t len)
 {
 	/* send an initial END character to flush out any data that may
 	 * have accumulated in the receiver due to line noise
@@ -77,7 +77,7 @@ void slip_send_packet(uchar_t *p, int8_t len)
  * 
  * @return  Number of bytes stored in the buffer.
  */
-int8_t slip_recv_packet(uchar_t *p, int8_t len, pkt_status_t *status)
+int slip_read(uchar_t *p, int8_t len, pkt_status_t *status)
 {
 	uchar_t c;
 	int8_t received = 0;

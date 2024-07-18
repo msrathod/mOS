@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 07 2024, 06:43:21 pm
  * -----
- * Last Modified: 17 07 2024, 07:40:25 pm
+ * Last Modified: 18 07 2024, 07:30:37 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -47,7 +47,7 @@ typedef struct {
 #define SLIP_ESC_ESC         ((uint8_t)0335)    /* ESC_ESC -> ESC byte */
 
 /**
- * @fn      int8_t slip_recv_packet(uchar_t *, int8_t, pkt_status_t *);
+ * @fn      int slip_read(uchar_t *, int8_t, pkt_status_t *);
  * @brief   RECV_PACKET: receives a packet into the buffer located at "p".
  * @param   p       pointer to the receive buffer
  * @param   len     number of bytes to be received
@@ -57,16 +57,16 @@ typedef struct {
  * @note:   
  *          If more than len bytes are received, the packet will be truncated.
  */
-int8_t slip_recv_packet(uchar_t *p, int8_t len, pkt_status_t *status);
+int slip_read(uchar_t *p, int8_t len, pkt_status_t *status);
 
 /**
- * @fn      void slip_send_packet(uchar_t *p, int8_t len);
+ * @fn      void slip_write(uchar_t *p, int8_t len);
  * @param   p       pointer to the receive buffer
  * @param   len     length of packet
  * @return  void 
  * @brief   SEND_PACKET: sends a packet of length "len", starting at
  *          location "p".
  */
-void slip_send_packet(uchar_t *p, int8_t len);
+void slip_write(uchar_t *p, int8_t len);
 
 #endif /* utils_slip_h */

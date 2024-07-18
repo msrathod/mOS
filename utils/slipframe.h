@@ -1,9 +1,9 @@
 /** 
- * @file 	ismpframe.h
+ * @file 	slipframe.h
  * @author 	Mohit Rathod
- * Created: 08 10 2022, 03:44:44 pm
+ * Created: 18 07 2024, 07:51:49 am
  * -----
- * Last Modified: 18 07 2024, 07:23:16 am
+ * Last Modified: 18 07 2024, 09:35:09 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -13,22 +13,21 @@
  *  
  *  ISMP frame format
  * 
- *        |Header|Length|<--------Payload--------------->|Checksum|
- *        +------+------+----+------+------+      +------+--------+
- *        | Head | len  |Port|Data_1|Data_2|      |Data_n|   CRC  |
- *        +------+------+----+------+------+  ''' +------+--------+
- *           1      2      3    4      5            N+2     N+3
+ *        |Header| Port |<--------Payload----------------->|Checksum|
+ *        +------+------+------+------+------+      +------+--------+
+ *        | Head | Port |Data_0|Data_1|Data_2|      |Data_n|   CRC  |
+ *        +------+------+------+------+------+  ''' +------+--------+
+ *           1      2      3       4      5            N+2     N+3
  *  Max Data payload = N bytes
  *  Max packet length = N + 3 bytes
- *  Head    => ISMP Header          (1 Byte)
- *  Len     => Length of payload    (1 Byte)
- *  Port    => i2c Server Port      (1 Byte) 
+ *  Head    => SMP Header           (1 Byte)
+ *  Port    => SMP Server Port      (1 Byte) 
  *  Data_x  => Payload Data         (Len-1 Byte)
  *  CRC     => CRC8 of the frame    (1 Byte) 
  * 
  */
-#ifndef utils_ismpframe_h
-#define utils_ismpframe_h
+#ifndef utils_slipframe_h
+#define utils_slipframe_h
 #include <stdint.h>
 
 #define MAX_PAYLOAD_LEN         (4)
@@ -41,13 +40,12 @@ typedef union
     struct
     {
         uint8_t Header;
-        uint8_t Len;
         uint8_t Port;
-        uint8_t Data[MAX_PAYLOAD_LEN - 1];
+        uint8_t Data[MAX_PAYLOAD_LEN];
         uint8_t Checksum;
     };
     uint8_t buf[MAX_PACKET_LEN];
-} ISMPframe_t;
+} SLIPframe_t;
  
 typedef enum{
     FRAME_OK                = 0x00,
@@ -62,7 +60,7 @@ typedef enum{
     UNKNOWN_ERROR,
     UNKNOWN_RESP,
     ISMP_VERSION            = 0xC0
-} ISMPresponse_t;
+} SMPresponse_t;
 
 typedef enum port_enum{
     PORT_0 = 0xA0,   // provides service 0
@@ -74,6 +72,6 @@ typedef enum port_enum{
     PORT_6,          // provides service 6
     PORT_7,          // provides service 7
     PORT_MAX
-} ISMPport_t;
+} SMPport_t;
 
-#endif /* utils_ismpframe_h */
+#endif /* utils_slipframe_h */
