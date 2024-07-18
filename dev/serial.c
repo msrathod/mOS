@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 04:22:37 pm
  * -----
- * Last Modified: 21 09 2022, 10:35:23 pm
+ * Last Modified: 18 07 2024, 07:07:38 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -105,6 +105,15 @@ int serial_write(const char *str)
 size_t getSerialBaud()
 {
     return SERIAL_BAUD;
+}
+
+size_t getSerialCount()
+{
+#if SERIAL_LITE == 1
+    return qCount(serial_qid);
+#else 
+    return 0;
+#endif
 }
 
 /* Add ISR if required and not implemented via I2C driver. */
