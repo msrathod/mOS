@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 07 2024, 06:43:21 pm
  * -----
- * Last Modified: 18 07 2024, 10:34:21 am
+ * Last Modified: 18 07 2024, 02:06:12 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -29,6 +29,17 @@
 #define SLIP_ESC_ESC         ((uint8_t)0335)    /* ESC_ESC -> ESC byte */
 
 /**
+ * @brief Packet occupancy status enumeration
+ */
+typedef enum
+{
+  PENDING     = (uint8_t)0xFF,
+  COMPLETE    = (uint8_t)0x0F,
+  EMPTY       = (uint8_t)0xF0,
+  STATUS_ERR
+}pkt_status_t;
+
+/**
  * @fn      int slip_read(uchar_t *, int8_t, pkt_status_t *);
  * @brief   RECV_PACKET: receives a packet into the buffer located at "p".
  * @param   p       pointer to the receive buffer
@@ -39,7 +50,7 @@
  * @note:   
  *          If more than len bytes are received, the packet will be truncated.
  */
-int slip_read(uchar_t *p, int8_t len, pkt_status_t *status);
+int slip_read(uint8_t *p, int8_t len, pkt_status_t *status);
 
 /**
  * @fn      void slip_write(uchar_t *p, int8_t len);
@@ -49,6 +60,6 @@ int slip_read(uchar_t *p, int8_t len, pkt_status_t *status);
  * @brief   SEND_PACKET: sends a packet of length "len", starting at
  *          location "p".
  */
-void slip_write(uchar_t *p, int8_t len);
+void slip_write(uint8_t *p, int8_t len);
 
 #endif /* utils_slip_h */

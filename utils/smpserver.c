@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 18 07 2024, 08:19:07 am
  * -----
- * Last Modified: 18 07 2024, 11:26:33 am
+ * Last Modified: 18 07 2024, 02:42:01 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -12,40 +12,40 @@
  * @brief 
  * 
  */
+#include <string.h>
+#include <stdbool.h>
 #include <utils/smpserver.h>
 #include <utils/slip.h>
 
-typedef enum
-{
-  PENDING     = (uint8_t)0xFF,
-  COMPLETE    = (uint8_t)0x0F,
-  EMPTY       = (uint8_t)0xF0,
-  STATUS_ERR
-}pkt_status_t;
-
-typedef struct
-{
-  uint8_t idx;                /** Buffer index(length) for 
-                                  ongoing package */
-  pkt_status_t pkt_status;    /*  Packet status */
-  SLIPframe_t *pkt; 
-}SLIP_PACKET_t;
-
-
-/**
- * @brief SLIP packet structure
- */
 
 static SLIPframe_t _SLPpkt;
-static SLIP_PACKET_t SLP;
+static uint8_t idx = 0;
+static pkt_status_t pkt_status = EMPTY;
 
-static void _flush_packet(SLIP_PACKET_t *pckt);
-
-static void _flush_packet(SLIP_PACKET_t *pckt)
+/* Service format */
+typedef struct
 {
-  pckt->pkt_status = EMPTY;
-  pckt->idx = 0;
-  memset(pckt->pkt->buf, 0, MAX_PACKET_LEN);
+  srvcfn_t pService;
+  void *param;
+  uint8_t len;
+  uint8_t rsp;
+  volatile uint16_t run;
+}services_t;
+
+static services_t _srvc[SMP_PORT_MAX];
+
+
+static SMPresponse_t response = UNKNOWN_ERROR;
+
+static void _flush_packet(SLIPframe_t *pckt);
+static void packet_processor(SLIPframe_t *packet);
+static bool isValidPort(SMPport_t portNum);
+
+static void _flush_packet(SLIPframe_t *pckt)
+{
+  idx = 0;
+  pkt_status = EMPTY;
+  memset(pckt->buf, 0, MAX_PACKET_LEN);
 }
 
 
@@ -54,10 +54,10 @@ static void _flush_packet(SLIP_PACKET_t *pckt)
  *        Function to initiailize the SFMP packet manager.
  * @return 0 on SUCCESS or -1 on FAILURE.      
  */
-int smp_init()
+int sfmp_init()
 {
-    SLP.pkt = &_SLPpkt;
-    _flush_packet(&SLP);
+    _flush_packet(&_SLPpkt);
+    return 0;
 }
 
 /**
@@ -69,57 +69,27 @@ int smp_init()
 void smp_manager()
 {
   uint8_t recvd;
-  recvd = SLP.idx;
+  recvd = idx;
 
   if( recvd < MAX_PACKET_LEN )
   {
     
-    recvd += slip_read( &(SLP.pkt->buf[recvd]), MAX_PACKET_LEN - recvd,
-                               &(SLP.pkt_status));
-    SLP.idx = recvd;
+    recvd += slip_read( &(_SLPpkt.buf[recvd]), MAX_PACKET_LEN - recvd,
+                               &(pkt_status));
+    idx = recvd;
   }
 
-  if((SLP.pkt_status == COMPLETE)||(recvd == MAX_PACKET_LEN))
+  if((pkt_status == COMPLETE)||(recvd == MAX_PACKET_LEN))
   {      
-    if(packet_processor(&SLP) == SUCCESS)
+/*     if(packet_processor(&SLP) == SUCCESS)
     {
       slip_write(SLP.pkt->buf, SLP.idx);
-    }
-    _flush_packet(&SLP);  
+    } */
+    _flush_packet(&_SLPpkt);  
   }  
 }
 
-static void packet_processor(SLIP_PACKET_t *packet)
-{
-	if (_srvc[packet->pkt->Port - PORT_0].run != 0) {
-		response = FRAME_OK_SRVC_BUSY;
-	}
-	else {
-		_srvc[packet->pkt->Port - PORT_0].run++;
-		/* check for null buffers in param */
-		if (_srvc[packet->pkt->Port - PORT_0].param) {
-			memcpy(_srvc[packet->pkt->Port - PORT_0].param, packet.Data, _srvc[packet.Port - PORT_0].len);
-		}
-		response = FRAME_OK;
-	}
-}
 
-/* Service format */
-typedef struct
-{
-  srvfn_t pService;
-  void *param;
-  uint8_t len;
-  uint8_t rsp;
-  volatile uint16_t run;
-}services_t;
-
-static services_t _srvc[SMP_PORT_MAX];
-
-
-static SMP_packet_t packet;
-static SMP_status_t status = BEGIN_MODE;
-static SMPresponse_t response = UNKNOWN_ERROR;
 
 /**
  * @brief SMP Server initialization
@@ -149,7 +119,7 @@ int smp_init()
  *                   must be a valid SMP_port_t value
  * @return 0 on success, -1 otherwise.  
  */
-int smp_addService(srvfn_t pService, const uint16_t len, uint8_t *pbuf, SMP_port_t portID)
+int smp_addService(srvcfn_t pService, const uint16_t len, uint8_t *pbuf, SMPport_t portID)
  {
     int ret = -1;
     if(isValidPort(portID))
@@ -159,7 +129,7 @@ int smp_addService(srvfn_t pService, const uint16_t len, uint8_t *pbuf, SMP_port
             _srvc[portID-PORT_0].pService = pService;
             _srvc[portID-PORT_0].param = pbuf;
             _srvc[portID-PORT_0].len = len;
-            _srvc[portID-PORT_0].rsp = UNKNOWN_RESPONSE;
+            _srvc[portID-PORT_0].rsp = UNKNOWN_RESP;
             _srvc[portID-PORT_0].run = 0;
             ret = 0;
         }
@@ -176,7 +146,7 @@ int smp_addService(srvfn_t pService, const uint16_t len, uint8_t *pbuf, SMP_port
  * 
  * @return 0 on success, -1 otherwise.  
  */
-int smp_delService(SMP_port_t portID)
+int smp_delService(SMPport_t portID)
 {
     int ret = -1;
     if(isValidPort(portID))
@@ -221,4 +191,19 @@ static bool isValidPort(SMPport_t portNum)
 		ret = true;
 	}
 	return ret;
+}
+
+static void packet_processor(SLIPframe_t *packet)
+{
+	if (_srvc[packet->Port - PORT_0].run != 0) {
+		response = FRAME_OK_SRVC_BUSY;
+	}
+	else {
+		_srvc[packet->Port - PORT_0].run++;
+		/* check for null buffers in param */
+		if (_srvc[packet->Port - PORT_0].param) {
+			memcpy(_srvc[packet->Port - PORT_0].param, packet->Data, _srvc[packet->Port - PORT_0].len);
+		}
+		response = FRAME_OK;
+	}
 }

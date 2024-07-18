@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 07:51:28 am
  * -----
- * Last Modified: 18 07 2024, 07:07:14 am
+ * Last Modified: 18 07 2024, 02:46:04 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -15,6 +15,7 @@
 #ifndef dev_serial_h
 #define dev_serial_h
 #include <stdint.h>
+#include <stddef.h>
 
 /**
  * @fn      int serial_init(void);
@@ -25,12 +26,12 @@
 int serial_init(void);
 
 /**
- * @fn      int serial_getchar(void);
+ * @fn      int serial_getchar(char *);
  * @brief   Read a character from Serial(UART) module.
- * @param   void
+ * @param   p pointer to char
  * @return  read char on success, -1 otherwise
  */
-int serial_getchar(void);
+int serial_getchar(uint8_t *p);
 
 /**
  * @fn      int serial_putchar(int c);

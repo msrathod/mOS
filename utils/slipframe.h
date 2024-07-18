@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 18 07 2024, 07:51:49 am
  * -----
- * Last Modified: 18 07 2024, 09:35:09 am
+ * Last Modified: 18 07 2024, 02:10:52 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -30,7 +30,7 @@
 #define utils_slipframe_h
 #include <stdint.h>
 
-#define MAX_PAYLOAD_LEN         (4)
+#define MAX_PAYLOAD_LEN         (5)
 #define MAX_PACKET_LEN          (MAX_PAYLOAD_LEN + 3)
 #define ISMP_SVC_HEADER         (0x80)
 #define ISMP_RSP_HEADER         (0x55)

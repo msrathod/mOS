@@ -176,7 +176,7 @@ uint8_t srvc_port2(void *pargs)
 }
 
 /**
- * @brief Interrupt servie routine for sensors(buttons)
+ * @brief Interrupt service routine for sensors(buttons)
  * 
  * @return * __attribute__() void Port1_ISR(void) 
  */
