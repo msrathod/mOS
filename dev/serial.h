@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 17 09 2022, 07:51:28 am
  * -----
- * Last Modified: 21 09 2022, 10:14:25 pm
+ * Last Modified: 18 07 2024, 07:07:14 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -55,6 +55,12 @@ int serial_write(const char *str);
  */
 size_t getSerialBaud(void);
 
+/**
+ * @fn      size_t getSerialCount(void);
+ * @brief   Get the Serial receive buffer count in bytes
+ * @return  Number of bytes pending in serial receive queue.
+ */
+size_t getSerialCount(void);
 
 
 #endif /* dev_serial_h */
