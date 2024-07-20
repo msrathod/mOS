@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 19 07 2024, 07:09:39 am
  * -----
- * Last Modified: 19 07 2024, 10:31:00 am
+ * Last Modified: 20 07 2024, 11:15:44 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -19,24 +19,18 @@
 #include <stdbool.h>
 
 /**
- * @brief Service function template. */
+ * @typedef uint8_t (*srvfn_t)(void *);
+ * @brief   Service function template. 
+ */
 typedef uint8_t (*srvfn_t)(void *);
 
-/* Service format */
-typedef struct
-{
-	srvfn_t pService;       /* service function */
-	void *param;            /* params buffer */
-	uint8_t len;            /* length of param */
-	uint8_t rsp;            /* return response of service */
-	volatile uint16_t run;  /* run flag for service execution */
-} services_t;
-
-typedef struct
-{
-    services_t services[];
-    size_t num;
-} server_t;
+/**
+ * @typedef typedef unsigned int serverID_t;
+ * @brief   Server identifier
+ *          Desribes the server for whose services needs to be accessed.
+ *          A unique value represents a unique server.
+ */
+typedef unsigned int serverID_t;
 
 typedef enum port_enum{
     PORT_0 = 0xA0,          // provides service 0
@@ -48,61 +42,54 @@ typedef enum port_enum{
     PORT_6,                 // provides service 6
     PORT_7,                 // provides service 7
     PORT_MAX
-} SVCport_t;
+} portID_t;
 
 /**
  * @brief Services initialization
- *        Initialize the service arrays.
- * @param pServices pointer to services buffer for server
- * @param num       number of ports used for server    
- * @return void
+ *        Initialize the services array for the server and generates its
+ *        unique ID.
+ * @param   pID pointer to serverID for the initialized server.
+ * @param   num number of ports used for server    
+ * @return   0 on success, 
+ *          -1 max server init calls or null pointers
+ *          -2 for invalid services pointer in server 
  */
-void services_init(server_t *pServer);
-void services_init(server_t *pServer)
-{
-    SVCport_t portID;
-    for (portID = PORT_0; portID < (PORT_0 + pServer->num); portID++) {
-        _delService(pServer->services, portID);
-    }
-}
+int services_init(serverID_t *pID, int num);
 
 /**
- * @brief    ICS_addService function to add a service to the server.
+ * @brief    addServices function to add a service to the server.
  * 
+ * @param serverID      the server to which the service needs to be added.
+ *                      @ref serverID_t
  * @param service_fn    the name of the function which is to be registered.
  *                      @note All service functions must be of type 
- *                      @ref srvfn_t.
+ *                      @ref srvfn_t
  * @param len           length of the parameter buffer.
  * @param pbuf          buffer to store parameters for this service.
- * @param port          the ISMPport to which service_fn needs to be attached.
- *                      must be a valid ISMPport_t value
- * @return 0 on success, -1 otherwise.  
+ * @param port          the port to which service_fn needs to be attached.
+ *                      must be a valid @ref portID_t value
+ * @return       0 on success,
+ *              -1 if server ID is invalid
+ *              -2 if portID is invalid
+ *              -3 if service is invalid or already registered at this port
  */
-int ICS_addService(srvfn_t pService, const uint16_t len, void *pbuf, ISMPport_t portID);
+int addService(serverID_t serverID, srvfn_t pService, const uint16_t len, void *pbuf, portID_t portID);
 
 /**
- * @brief   ICS_delService function to remove a service from the server.
+ * @brief   delService function to remove a service from the server.
  * @note:   This does *not* delete the associated function from memory 
  *          it simply means that it is no longer serviced by the server.
+ * @param   serverID server identifier
  * @param   portID port no. of the service to be removed.
  * 
- * @return 0 on success, -1 otherwise.  
+ * @return   0 on success, 
+ *          -1 if serverID is invalid, 
+ *          -2 if portID is invalid.  
  */
-int ICS_delService(ISMPport_t portID);
-int ICS_delService(ISMPport_t portID)
-{
-	int ret = -1;
-    if(isValidPort(portID)) {
-		srvc[portID - PORT_0].pService = NULL;
-		srvc[portID - PORT_0].param = NULL;
-		srvc[portID - PORT_0].len = 0;
-		srvc[portID - PORT_0].rsp = 0;
-		srvc[portID - PORT_0].run = 0;
-		ret = 0;
-	}
-	return ret;
-}
+int delService(serverID_t serverID, portID_t portID);
 
+bool isValidService(serverID_t serverID, portID_t portID);
+int get
 /**
  * @brief   ICS Server service dispatcher.
  *          When a service (function) is due to run, this function will run it.
