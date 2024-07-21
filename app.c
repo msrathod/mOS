@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 24 09 2022, 05:52:24 pm
  * -----
- * Last Modified: 15 07 2024, 04:16:36 pm
+ * Last Modified: 21 07 2024, 08:36:04 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -16,6 +16,8 @@
 #include <mos.h>
 #include <utils/errmos.h>
 #include <utils/icsserver.h>
+#include <utils/smf.h>
+#include <dev/md13s.h>
 
 
 // Service functions
@@ -26,14 +28,11 @@ uint8_t srvc_port2(void *pargs);
 uint8_t var_p1[1];
 uint8_t var_p2[1];
 
-//sunroof state machine setup
-#include <utils/smf.h>
-#include <dev/md13s.h>
-
 /* Desired debouncing time in ms */
 #define DEBOUNCE_TIME_MS    10
 /* Debounce period register value to be fed to TACCRx */
 const uint16_t debounce_period = ((((MOS_GET(MCLK_FREQ) * 1000)/4)*DEBOUNCE_TIME_MS) - 1);
+
 /* Map sunroof events to StateMachine */
 #define EV_OPEN       EVENT_0
 #define EV_CLOSE      EVENT_1
@@ -48,47 +47,13 @@ const uint16_t debounce_period = ((((MOS_GET(MCLK_FREQ) * 1000)/4)*DEBOUNCE_TIME
 #define ST_CLOSING    STATE_3
 #define ST_STOPPED    STATE_4
 
-
 state_t openEvent_Handler(void)
-{
-  md13s_run(MD_CW);
-  MPRINT("\nOpen Event Handler.");
-  return ST_OPENING;
-}
-
 state_t closeEvent_Handler(void)
-{
-  md13s_run(MD_CCW);
-  MPRINT("\nClose Event Handler.");
-  return ST_CLOSING;
-}
-
 state_t stopEvent_Handler(void)
-{
-  md13s_stop();
-  MPRINT("\nStop Event Handler.");
-  return ST_STOPPED;
-}
-
 state_t limit_openEvent_Handler(void)
-{
-  md13s_stop();
-  MPRINT("\nLimit(o)Event Handler.");
-  return ST_OPEN;
-}
-
 state_t limit_closeEvent_Handler(void)
-{
-  md13s_stop();
-  MPRINT("\nLimit(c)Event Handler.");
-  return ST_CLOSE;
-}
-
 state_t resetEvent_Handler(void)
-{
-  MPRINT("\nReset Event Handler.");
-  return ST_CLOSE;
-}
+
 
 void setup()
 {
@@ -101,7 +66,7 @@ void setup()
     errmos = ICS_addService(srvc_port2, 1, var_p2, PORT_2);
     EPRINT("\nAdding service to port 2 of ICS server.");
 
-        /* event action pair for ST_OPEN case */
+    /* event action pair for ST_OPEN case */
     evAction_t eAST_Open[] = {
                                   {EV_CLOSE, closeEvent_Handler},
                                   {EV_STOP, stopEvent_Handler}
@@ -173,6 +138,47 @@ uint8_t srvc_port2(void *pargs)
     uint8_t *args = (uint8_t*)pargs;
     md13s_setDuty(*args);
     return 0;
+}
+
+state_t openEvent_Handler(void)
+{
+  md13s_run(MD_CW);
+  MPRINT("\nOpen Event Handler.");
+  return ST_OPENING;
+}
+
+state_t closeEvent_Handler(void)
+{
+  md13s_run(MD_CCW);
+  MPRINT("\nClose Event Handler.");
+  return ST_CLOSING;
+}
+
+state_t stopEvent_Handler(void)
+{
+  md13s_stop();
+  MPRINT("\nStop Event Handler.");
+  return ST_STOPPED;
+}
+
+state_t limit_openEvent_Handler(void)
+{
+  md13s_stop();
+  MPRINT("\nLimit(o)Event Handler.");
+  return ST_OPEN;
+}
+
+state_t limit_closeEvent_Handler(void)
+{
+  md13s_stop();
+  MPRINT("\nLimit(c)Event Handler.");
+  return ST_CLOSE;
+}
+
+state_t resetEvent_Handler(void)
+{
+  MPRINT("\nReset Event Handler.");
+  return ST_CLOSE;
 }
 
 /**
