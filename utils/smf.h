@@ -83,16 +83,6 @@ typedef struct
 } evAction_t;
 
 /**
- * @brief   State Transition data structure, lists all possible event-action
- *          pair for a particular state.
- */
-typedef struct
-{
-    evAction_t *pAction;    /* Pointer to evAction Array for a given state */
-    size_t len;             /* Number of valid evAction pair for the state */
-} stateTransition_t;
-
-/**
  * @fn      int SMF_init(state_t iState);
  * @brief   Initialize the State Machine Framework, also sets up the initial
  *          state of the generic state machine.
@@ -108,7 +98,7 @@ int SMF_init(state_t iState);
  * @param   ptr     pointer to state transition table of the above state. 
  * @return  0 on success, -1 otherwise
  */
-int SMF_addState(state_t uState, stateTransition_t *ptr);
+int SMF_addState(state_t uState, evAction_t *ptr, size_t len);
 
 /**
  * @fn      state_t SMF_getState(void);

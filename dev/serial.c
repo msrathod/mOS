@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 09 2022, 04:22:37 pm
  * -----
- * Last Modified: 21 09 2022, 10:35:23 pm
+ * Last Modified: 18 07 2024, 02:45:49 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -59,13 +59,13 @@ int serial_init()
     return ret;
 }
 
-int serial_getchar()
+int serial_getchar(uint8_t *p)
 {
     int ret = -1;
 #if SERIAL_LITE != 1
-    char c = -1;
-    if (0 == qDequeue(serial_qID, &c)) {    /* dequeue is successful? */
-        ret = (int) c;
+    //char c = -1;
+    if (0 == qDequeue(serial_qID, p)) {    /* dequeue is successful? */
+        ret = 0;
     } 
 #endif/* SERIAL_LITE */
     return ret;
@@ -105,6 +105,15 @@ int serial_write(const char *str)
 size_t getSerialBaud()
 {
     return SERIAL_BAUD;
+}
+
+size_t getSerialCount()
+{
+#if SERIAL_LITE != 1
+    return qCount(serial_qID);
+#else 
+    return 0;
+#endif
 }
 
 /* Add ISR if required and not implemented via I2C driver. */
