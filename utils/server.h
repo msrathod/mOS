@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 19 07 2024, 07:09:39 am
  * -----
- * Last Modified: 21 07 2024, 07:15:22 am
+ * Last Modified: 21 07 2024, 09:30:41 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -103,17 +103,37 @@ bool isValidService(serverID_t serverID, portID_t portID);
  *          server serverID.
  * @param   serverID - server identifier
  * @param   portID - port identifier
+ * @param   data - params data
  * @return  0 on sucess, -1 otherwise
  */
-int pushParam2Service(serverID_t serverID, portID_t portID);
+int pushParam2Service(serverID_t serverID, portID_t portID, void *data);
 
 /**
- * @brief   ICS Server service dispatcher.
+ * @brief Get the param len for the service at portID on server serverID. 
+ * @param   serverID - server identifier
+ * @param   portID   - port identifier
+ * @return  len of param on success
+ *          -1 on invalid serverID
+ *          -2 on invalid portID
+ */
+int getParamLen(serverID_t serverID, portID_t portID);
+
+/**
+ * @brief Get the Service Rsp for the service specified at portID on
+ *        server serverID.
+ * @param   serverID 
+ * @param   portID 
+ * @return  respone of service action 
+ */
+int getServiceRsp(serverID_t serverID, portID_t portID);
+
+/**
+ * @brief   Server services dispatcher.
  *          When a service (function) is due to run, this function will run it.
  *          This function must be called (repeatedly) from the main loop.
- * @param   none.
- * @return none.
+ * @param   serverID -  server id for which the dispatcher is requested. 
+ * @return  none 
  */
-void ICS_run(void);
+void server_run(serverID_t serverID);
 
 #endif /* utils_services_h */

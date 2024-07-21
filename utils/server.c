@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 20 07 2024, 07:02:30 am
  * -----
- * Last Modified: 21 07 2024, 08:07:38 am
+ * Last Modified: 21 07 2024, 09:44:32 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -46,7 +46,7 @@ static bool _isValidPort(portID_t portID, size_t portMax);
 static bool _isValidServer(serverID_t serverID, size_t serverMax);
 static void _delService(services_t *ptr, portID_t portID);
 static void _addService(services_t*ptr, srvfn_t pService, const uint16_t len, void *pbuf, portID_t portID)
-static inline void _pushParam(services_t *ptr, portID_t portID, void *pdata, const uint16_t len);
+static inline void _pushParam(services_t *ptr, portID_t portID, void *pdata);
 
 /**
  * @brief Services initialization
@@ -192,8 +192,74 @@ int pushParam2Service(serverID_t serverID, portID_t portID, void *data)
 	return ret;
 }
 
+/**
+ * @brief Get the param len for the service at portID on server serverID. 
+ * @param   serverID - server identifier
+ * @param   portID   - port identifier
+ * @return  len of param on success
+ *          -1 on invalid serverID
+ *          -2 on invalid portID
+ */
+int getParamLen(serverID_t serverID, portID_t portID)
+{
+    int ret = -1;
+    if(_isValidServer(serverID, serverIDx))
+    {
+        ret = -2;
+        if(isValidPort(portID, _Server[serverID].portMax)) 
+        {
+            ret = _Server[serverID].pServices[portID - PORT_0].len;
+        }
+    }
+	return ret;
+}
 
+/**
+ * @brief Get the Service Rsp for the service specified at portID on
+ *        server serverID.
+ * @param   serverID 
+ * @param   portID 
+ * @return  respone of service action 
+ */
+int getServiceRsp(serverID_t serverID, portID_t portID)
+{
+    int ret = -1;
+    if(_isValidServer(serverID, serverIDx))
+    {
+        ret = -2;
+        if(isValidPort(portID, _Server[serverID].portMax)) 
+        {
+            ret = _Server[serverID].pServices[portID - PORT_0].rsp;
+        }
+    }
+	return ret;
+}
 
+/**
+ * @brief   Server services dispatcher.
+ *          When a service (function) is due to run, this function will run it.
+ *          This function must be called (repeatedly) from the main loop.
+ * @param   serverID -  server id for which the dispatcher is requested. 
+ * @return  none 
+ */
+void server_run(serverID_t serverID)
+{
+    if(_isValidServer(serverID, serverIDx))
+    {
+        portID_t portID;
+        for (portID = PORT_0; portID < (PORT_0 + _Server[serverID].portMax); portID++) 
+        {
+            if(_Server[serverID].pServices[portID-PORT_0].pService) 
+            {
+                if(_Server[serverID].pServices[portID-PORT_0].run > 0){
+                    _Server[serverID].pServices[portID-PORT_0].rsp = _Server[serverID].pServices[portID-PORT_0].pService(_Server[serverID].pServices[portID-PORT_0].param);
+                    _Server[serverID].pServices[portID-PORT_0].run--;
+                }
+            }
+
+        }
+    }
+}
 
 static void _delService(services_t *ptr, portID_t portID)
 {
