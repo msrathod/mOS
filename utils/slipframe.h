@@ -3,15 +3,15 @@
  * @author 	Mohit Rathod
  * Created: 18 07 2024, 07:51:49 am
  * -----
- * Last Modified: 18 07 2024, 02:10:52 pm
+ * Last Modified: 21 07 2024, 08:18:44 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
  * https://opensource.org/licenses/MIT
  * 
- * @brief   i2c Server Message Protocol(ISMP) definition.
+ * @brief   SLIP Server Message Protocol(SMP) frame.
  *  
- *  ISMP frame format
+ *  SMP frame format
  * 
  *        |Header| Port |<--------Payload----------------->|Checksum|
  *        +------+------+------+------+------+      +------+--------+
