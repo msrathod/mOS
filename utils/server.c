@@ -1,9 +1,9 @@
 /** 
- * @file 	services.c
+ * @file 	server.c
  * @author 	Mohit Rathod
  * Created: 20 07 2024, 07:02:30 am
  * -----
- * Last Modified: 20 07 2024, 09:48:28 am
+ * Last Modified: 21 07 2024, 08:07:38 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -13,8 +13,9 @@
  * 
  */
 #include <mos.h>
-#include <utils/services.h>
+#include <utils/server.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if MOS_GET(MAX_SERVERS)
 #define SERVER_MAX              MOS_GET(MAX_SERVERS)
@@ -34,7 +35,7 @@ typedef struct
 
 typedef struct
 {
-    services_t *pServices;  /* services offered by server */
+    services_t *pServices;      /* services offered by server */
     size_t portMax;             /* num of services (also port occupied) */
 } server_t;
 
@@ -44,7 +45,8 @@ static size_t serverIDx = 0;
 static bool _isValidPort(portID_t portID, size_t portMax);
 static bool _isValidServer(serverID_t serverID, size_t serverMax);
 static void _delService(services_t *ptr, portID_t portID);
-static void _addService(srvfn_t pService, const uint16_t len, void *pbuf, portID_t portID);
+static void _addService(services_t*ptr, srvfn_t pService, const uint16_t len, void *pbuf, portID_t portID)
+static inline void _pushParam(services_t *ptr, portID_t portID, void *pdata, const uint16_t len);
 
 /**
  * @brief Services initialization
@@ -56,7 +58,7 @@ static void _addService(srvfn_t pService, const uint16_t len, void *pbuf, portID
  *         -1 max server init calls or null pointers
  *         -2 for invalid services pointer in server 
  */
-int services_init(serverID_t *pID, int numPort)
+int server_init(serverID_t *pID, int numPort)
 {
     static serverID_t _idx = 0;
     int ret = -1;
@@ -64,7 +66,8 @@ int services_init(serverID_t *pID, int numPort)
     if((_idx < SERVER_MAX) && (pID != NULL) && (numPort > 0))
     {
         _Server[_idx].portMax = numPort;
-        _Server[_idx].pservices = (services_t*) malloc(numPort * sizeof(services_t));
+        _Server[_idx].pservices = (services_t*) malloc(numPort * sizeof(services_t)); 
+        //@todo add a check for null ptr from malloc
         for(portID = PORT_0; portID < (PORT_0 + numPort); portID++) 
         {
             _delService(_Server[_idx].pServices, portID);
@@ -138,7 +141,56 @@ int delService(serverID_t serverID, portID_t portID)
 	return ret;
 }
 
+/**
+ * @brief   Queries the service status or validity at a given port(portID) on
+ *          the provided server (serverID).
+ * @param   serverID - server identifier  
+ * @param   portID - port identifier
+ * @return  true - if service exists 
+ * @return  false - otherwise
+ */
+bool isValidService(serverID_t serverID, portID_t portID)
+{
+    bool ret = false;
+    if(_isValidServer(serverID, serverIDx))
+    {
+        if(isValidPort(portID, _Server[serverID].portMax)) 
+        {
+            if(_Server[serverID].pServices[portID-PORT_0].pService){
+                ret = true;
+            }
+        }
+    }
+	return ret;
+}
 
+/**
+ * @brief   Push parameters to a service function at port portID on the 
+ *          server serverID.
+ * @param   serverID - server identifier
+ * @param   portID - port identifier
+ * @return  0 on sucess, -1 otherwise
+ */
+int pushParam2Service(serverID_t serverID, portID_t portID, void *data)
+{
+    int ret = -1;
+    if(_isValidServer(serverID, serverIDx))
+    {
+        ret = -2;
+        if(isValidPort(portID, _Server[serverID].portMax)) 
+        {
+            ret = -3;
+            /* check for busy service pending runs, if free then add params */
+            if(_Server[serverID].pServices[portID-PORT_0].run == 0)
+            {
+                _Server[serverID].pServices[portID-PORT_0].run++;
+                _pushParam(_Server[serverID].pServices, portID);
+                ret = 0;
+            }
+        }
+    }
+	return ret;
+}
 
 
 
@@ -177,4 +229,10 @@ static void _addService(services_t*ptr, srvfn_t pService, const uint16_t len, vo
     ptr[portID - PORT_0].len = len;
     ptr[portID - PORT_0].rsp = 0;
     ptr[portID - PORT_0].run = 0;
+}
+
+static inline void _pushParam(services_t *ptr, portID_t portID, void *pdata)
+{
+    uint16_t len = ptr[portID - PORT_0].len;
+    memcpy(ptr[portID - PORT_0].param, pdata, len);
 }

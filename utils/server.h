@@ -1,9 +1,9 @@
 /** 
- * @file 	services.h
+ * @file 	server.h
  * @author 	Mohit Rathod
  * Created: 19 07 2024, 07:09:39 am
  * -----
- * Last Modified: 20 07 2024, 11:15:44 am
+ * Last Modified: 21 07 2024, 07:15:22 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -54,7 +54,7 @@ typedef enum port_enum{
  *          -1 max server init calls or null pointers
  *          -2 for invalid services pointer in server 
  */
-int services_init(serverID_t *pID, int num);
+int server_init(serverID_t *pID, int num);
 
 /**
  * @brief    addServices function to add a service to the server.
@@ -88,8 +88,25 @@ int addService(serverID_t serverID, srvfn_t pService, const uint16_t len, void *
  */
 int delService(serverID_t serverID, portID_t portID);
 
+/**
+ * @brief   Queries the service status or validity at a given port(portID) on
+ *          the provided server (serverID).
+ * @param   serverID - server identifier  
+ * @param   portID - port identifier
+ * @return  true - if service exists 
+ * @return  false - otherwise
+ */
 bool isValidService(serverID_t serverID, portID_t portID);
-int get
+
+/**
+ * @brief   Push parameters to a service function at port portID on the 
+ *          server serverID.
+ * @param   serverID - server identifier
+ * @param   portID - port identifier
+ * @return  0 on sucess, -1 otherwise
+ */
+int pushParam2Service(serverID_t serverID, portID_t portID);
+
 /**
  * @brief   ICS Server service dispatcher.
  *          When a service (function) is due to run, this function will run it.

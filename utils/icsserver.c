@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 10 10 2022, 09:56:18 pm
  * -----
- * Last Modified: 14 10 2022, 09:29:40 pm
+ * Last Modified: 21 07 2024, 08:02:59 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -12,7 +12,7 @@
  * @brief   I2C Simple Slave Server implementation
  * 
  */
-#include "icsserver.h"
+#include <icsserver.h>
 #include <dev/i2c.h>
 #include <utils/crc8.h>
 #include <stddef.h>
