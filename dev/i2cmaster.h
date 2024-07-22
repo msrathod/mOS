@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 07 2024, 05:10:58 pm
  * -----
- * Last Modified: 21 07 2024, 05:28:52 pm
+ * Last Modified: 22 07 2024, 08:46:41 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -52,7 +52,7 @@ struct i2c_data
  * \brief Initialize the I2C peripheral
  * \return 0 on success, -1 otherwise
  */
-int i2c_init(void);
+int i2cmaster_init(void);
 
 /**
  * \brief Perform an I2C transfer
@@ -60,7 +60,7 @@ int i2c_init(void);
  * \param[in/out] data - data structure containing the buffers
  * \return 0 on success, -1 otherwise
  */
-int i2c_transfer(const struct i2c_device *dev, struct i2c_data *data);
+int i2cmaster_transfer(const struct i2c_device *dev, struct i2c_data *data);
 
 
 #endif /* dev_i2c_master_h */

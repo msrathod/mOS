@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 21 07 2024, 05:27:13 pm
  * -----
- * Last Modified: 21 07 2024, 06:00:10 pm
+ * Last Modified: 22 07 2024, 08:46:31 am
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -18,9 +18,9 @@
 
 #define I2C_PRESCALER       ((MOS_GET(MCLK_FREQ)*1000000)/MOS_GET(I2C_SPEED))
 
-static int _transmit(const struct i2c_device *dev, const uint8_t *buf, size_t nbytes);
-static int _receive(const struct i2c_device *dev, uint8_t *buf, size_t nbytes);
-static int _check_ack(const struct i2c_device *dev);
+static int _transmit(const uint8_t *buf, size_t nbytes);
+static int _receive(uint8_t *buf, size_t nbytes);
+static int _check_ack();
 
 /**
  * \brief Initialize the I2C peripheral
@@ -43,7 +43,7 @@ int i2cmaster_init(void)
  * \param[in/out] data - data structure containing the buffers
  * \return 0 on success, -1 otherwise
  */
-int i2c_transfer(const struct i2c_device *dev, struct i2c_data *data)
+int i2cmaster_transfer(const struct i2c_device *dev, struct i2c_data *data)
 {
     int err = 0;
     /* Set the slave device address */
@@ -51,130 +51,93 @@ int i2c_transfer(const struct i2c_device *dev, struct i2c_data *data)
  
     /* Transmit data is there is any */
     if (data->tx_len > 0) {
-        err = _transmit(dev, (const uint8_t *) data->tx_buf, data->tx_len);
+        err = _transmit((const uint8_t *) data->tx_buf, data->tx_len);
     }
 
     /* Receive data is there is any */
     if ((err == 0) && (data->rx_len > 0)) {
-        err = _receive(dev, (uint8_t *) data->rx_buf, data->rx_len);
+        err = _receive((uint8_t *) data->rx_buf, data->rx_len);
     } else {
         /* No bytes to receive send the stop condition */
         UCB0CTL1 |= UCTXSTP; 
     }
-            
     return err;
 }
 
 /**
  * \brief Check for ACK/NACK and handle NACK condition if occured
- * \param[in] dev - the I2C slave device
  * \return 0 if slave ACK'd, -1 if slave NACK'd
  */
-static int _check_ack(const struct i2c_device *dev)
+static int _check_ack()
 {
     int err = 0;
-    IGNORE(dev);
- 
-    /* Check for ACK */
-    if (UCB0STAT & UCNACKIFG) {    
-        /* Stop the I2C transmission */
-        UCB0CTL1 |= UCTXSTP;
-
-        /* Clear the interrupt flag */
-        UCB0STAT &= ~UCNACKIFG;
-
-        /* Set the error code */
+    if(UCB0STAT & UCNACKIFG)                /* check for NACK */
+    {    
+        UCB0CTL1 |= UCTXSTP;                /* Stop the i2c transmission */
+        UCB0STAT &= ~UCNACKIFG;             /* Clear the nack flag */
         err = -1;
     }
-
     return err;
 }
 
 /**
  * \brief Transmit data to the slave device
- * \param[in] dev - the I2C slave device
  * \param[in] buf - the buffer of data to transmit
  * \param[in] nbytes - the number of bytes to transmit
  * \return 0 on success, -1 otherwise
  */
-static int _transmit(const struct i2c_device *dev, const uint8_t *buf, size_t nbytes)
+static int _transmit(const uint8_t *buf, size_t nbytes)
 {
     int err = 0;
-    IGNORE(dev);
-
-    /* Send the start condition */
-    UCB0CTL1 |= UCTR | UCTXSTT;        
-
-    /* Wait for the start condition to be sent and ready to transmit interrupt */
+    UCB0CTL1 |= UCTR | UCTXSTT;                 /* Send the start condition */
+    /* Wait for the start condition to be sent and ready to tx interrupt */
     while ((UCB0CTL1 & UCTXSTT) && ((IFG2 & UCB0TXIFG) == 0));
-
-    /* Check for ACK */
-    err = _check_ack(dev);
-    
-    /* If no error and bytes left to send, transmit the data */
-    while ((err == 0) && (nbytes > 0)) {
-        UCB0TXBUF = *buf;
-        while ((IFG2 & UCB0TXIFG) == 0) {
-            err = _check_ack(dev);
-            if (err < 0) {
+    err = _check_ack();                         /* Check for ACK */
+    while ((err == 0) && (nbytes > 0)) 
+    {                                           /* If no error & bytes left  */ 
+        UCB0TXBUF = *buf;                       /* transmit the data*/
+        while ((IFG2 & UCB0TXIFG) == 0) 
+        {
+            err = _check_ack();
+            if (err < 0){
                 break;
             }
         }
-
         buf++;
         nbytes--;
     }
-    
     return err;
 }
 
 /**
  * \brief Receive data from the slave device
- * \param[in] dev - the I2C slave device
  * \param[in] buf - the buffer to store the received data
  * \param[in] nbytes - the number of bytes to receive
  * \return 0 on success, -1 otherwise
  */
-static int _receive(const struct i2c_device *dev, uint8_t *buf, size_t nbytes)
+static int _receive(uint8_t *buf, size_t nbytes)
 {
     int err = 0;
-    IGNORE(dev);
-
-    /* Send the start and wait */
-    UCB0CTL1 &= ~UCTR;
+    UCB0CTL1 &= ~UCTR;                  /* Send the start and wait */
     UCB0CTL1 |= UCTXSTT;
-
-    /* Wait for the start condition to be sent */
-    while (UCB0CTL1 & UCTXSTT);
+    while(UCB0CTL1 & UCTXSTT);          /* Wait for the START to be sent */
     
-    /* 
-     * If there is only one byte to receive, then set the stop
-     * bit as soon as start condition has been sent
-     */
-    if (nbytes == 1) {
-        UCB0CTL1 |= UCTXSTP;
+    if (nbytes == 1) {                  /* If there is only one byte to rx */
+        UCB0CTL1 |= UCTXSTP;            /* send STP after STT has been sent */
     }
+    err = _check_ack();                 /* Check for ACK */
 
-    /* Check for ACK */
-    err = _check_ack(dev);
+    while((err == 0) && (nbytes > 0))   /* If no error & bytes left to rx */
+    {                                   
+        while((IFG2 & UCB0RXIFG) == 0); /* Wait for the data */
 
-    /* If no error and bytes left to receive, receive the data */
-    while ((err == 0) && (nbytes > 0)) {
-        /* Wait for the data */
-        while ((IFG2 & UCB0RXIFG) == 0);
-
-        *buf = UCB0RXBUF;
+        *buf = UCB0RXBUF;               /* Rx the data */
         buf++;
         nbytes--;
 
-        /* 
-         * If there is only one byte left to receive
-         * send the stop condition
-         */
-        if (nbytes == 1) {
-            UCB0CTL1 |= UCTXSTP; 
+        if (nbytes == 1) {              /* If there is only 1 byte left to rx */
+            UCB0CTL1 |= UCTXSTP;        /* send STP condition */
         }
     }
-
     return err;
 }
