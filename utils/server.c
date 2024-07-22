@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 20 07 2024, 07:02:30 am
  * -----
- * Last Modified: 21 07 2024, 09:44:32 am
+ * Last Modified: 22 07 2024, 05:58:38 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -132,7 +132,7 @@ int delService(serverID_t serverID, portID_t portID)
     if(_isValidServer(serverID, serverIDx))
     {
         ret = -2;
-        if(isValidPort(portID, _Server[serverID].portMax)) 
+        if(_isValidPort(portID, _Server[serverID].portMax)) 
         {
             _delService(_Server[serverID].pServices, portID);
             ret = 0;
@@ -154,7 +154,7 @@ bool isValidService(serverID_t serverID, portID_t portID)
     bool ret = false;
     if(_isValidServer(serverID, serverIDx))
     {
-        if(isValidPort(portID, _Server[serverID].portMax)) 
+        if(_isValidPort(portID, _Server[serverID].portMax)) 
         {
             if(_Server[serverID].pServices[portID-PORT_0].pService){
                 ret = true;
@@ -177,7 +177,7 @@ int pushParam2Service(serverID_t serverID, portID_t portID, void *data)
     if(_isValidServer(serverID, serverIDx))
     {
         ret = -2;
-        if(isValidPort(portID, _Server[serverID].portMax)) 
+        if(_isValidPort(portID, _Server[serverID].portMax)) 
         {
             ret = -3;
             /* check for busy service pending runs, if free then add params */
@@ -206,7 +206,7 @@ int getParamLen(serverID_t serverID, portID_t portID)
     if(_isValidServer(serverID, serverIDx))
     {
         ret = -2;
-        if(isValidPort(portID, _Server[serverID].portMax)) 
+        if(_isValidPort(portID, _Server[serverID].portMax)) 
         {
             ret = _Server[serverID].pServices[portID - PORT_0].len;
         }
@@ -227,7 +227,7 @@ int getServiceRsp(serverID_t serverID, portID_t portID)
     if(_isValidServer(serverID, serverIDx))
     {
         ret = -2;
-        if(isValidPort(portID, _Server[serverID].portMax)) 
+        if(_isValidPort(portID, _Server[serverID].portMax)) 
         {
             ret = _Server[serverID].pServices[portID - PORT_0].rsp;
         }
