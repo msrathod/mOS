@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 08 10 2022, 03:44:44 pm
  * -----
- * Last Modified: 18 07 2024, 07:23:16 am
+ * Last Modified: 22 07 2024, 04:21:33 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -64,7 +64,7 @@ typedef enum{
     ISMP_VERSION            = 0xC0
 } ISMPresponse_t;
 
-typedef enum port_enum{
+/* typedef enum port_enum{
     PORT_0 = 0xA0,   // provides service 0
     PORT_1,          // provides service 1
     PORT_2,          // provides service 2
@@ -74,6 +74,6 @@ typedef enum port_enum{
     PORT_6,          // provides service 6
     PORT_7,          // provides service 7
     PORT_MAX
-} ISMPport_t;
+} ISMPport_t; */
 
 #endif /* utils_ismpframe_h */
