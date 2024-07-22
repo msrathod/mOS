@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 10 10 2022, 09:56:18 pm
  * -----
- * Last Modified: 21 07 2024, 08:02:59 am
+ * Last Modified: 22 07 2024, 06:02:18 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -15,19 +15,10 @@
 #include <icsserver.h>
 #include <dev/i2c.h>
 #include <utils/crc8.h>
+#include <utils/server.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
-
-/* Service format */
-typedef struct
-{
-	srvfn_t pService;
-	void *param;
-	uint8_t len;
-	uint8_t rsp;
-	volatile uint16_t run;
-} services_t;
 
 typedef enum serverState
 {
@@ -41,13 +32,13 @@ typedef enum serverState
 	SRVC_RSP_MODE
 } Serverstate_t;
 
-static services_t i2csrvc[PORT_NUM_MAX];
-
 static Serverstate_t state;
 static ISMPframe_t packet;
 static ISMPresponse_t response = UNKNOWN_RESP;
 
 static int rsp_port = PORT_0;
+
+static serverID_t icsID;
 
 static void stateCallback(void);
 static void txCallback(volatile uint8_t *txdata);
@@ -55,59 +46,28 @@ static void rxCallback(const uint8_t recvd);
 static void pushpacket(void);
 static bool isValidPort(ISMPport_t portNum);
 
-int ICSserver_init()
+int ICSserver_init(int numService)
 {
-    ISMPport_t portID;
-    for (portID = PORT_0; portID < (PORT_0 + PORT_NUM_MAX); portID++) {
-        ICS_delService(portID);
-    }
+	int ret;
+	ret = server_init(&icsID, numService);
     /* Enable the i2c dev in slave mode. */
     i2cslave_init(stateCallback, txCallback, rxCallback, ICS_SERVER_ADDRESS);
-    return 0;
+    return ret;
 }
 
-int ICS_addService(srvfn_t pService, const uint16_t len, void *pbuf, ISMPport_t portID)
+int ICS_addService(srvfn_t pService, const uint16_t len, void *pbuf, portID_t portID)
 {
-	int ret = -1;
-	if ((portID >= PORT_0) && (portID < (PORT_0 + PORT_NUM_MAX))) {
-		if ((i2csrvc[portID - PORT_0].pService == NULL) && (pService != NULL)) {
-			i2csrvc[portID - PORT_0].pService = pService;
-			i2csrvc[portID - PORT_0].param = pbuf;
-			i2csrvc[portID - PORT_0].len = len;
-			i2csrvc[portID - PORT_0].rsp = UNKNOWN_RESP;
-			i2csrvc[portID - PORT_0].run = 0;
-			ret = 0;
-		}
-	}
-	return ret;
+	return addService(icsID, pService, len, pbuf, portID);
 }
 
-int ICS_delService(ISMPport_t portID)
+int ICS_delService(portID_t portID)
 {
-	int ret = -1;
-	if ((portID >= PORT_0) && (portID < (PORT_0 + PORT_NUM_MAX))) {
-		i2csrvc[portID - PORT_0].pService = NULL;
-		i2csrvc[portID - PORT_0].param = NULL;
-		i2csrvc[portID - PORT_0].len = 0;
-		i2csrvc[portID - PORT_0].rsp = 0;
-		i2csrvc[portID - PORT_0].run = 0;
-		ret = 0;
-	}
-	return ret;
+	return delService(icsID, portID);
 }
 
 void ICS_run()
 {
-	ISMPport_t portID;
-	for (portID = PORT_0; portID < (PORT_0 + PORT_NUM_MAX); portID++) {
-		if (i2csrvc[portID - PORT_0].pService) {
-			if (i2csrvc[portID - PORT_0].run > 0) {
-				i2csrvc[portID - PORT_0].rsp = i2csrvc[portID - PORT_0].pService(i2csrvc[portID - PORT_0].param);
-				/* Critical Section? */
-				i2csrvc[portID - PORT_0].run--;
-			}
-		}
-	}
+	server_run(icsID);
 }
 
 static void stateCallback(void)
@@ -131,7 +91,7 @@ static void txCallback(volatile uint8_t *txdata)
 	{
 		case(SRVC_RSP_MODE):
 			state = HEADER_MODE;
-			*txdata = i2csrvc[rsp_port - PORT_0].rsp;
+			*txdata = getServiceRsp(icsID, rsp_port);
 			break;
 		case(PKT_RSP_MODE):
 			state = HEADER_MODE;
@@ -188,12 +148,14 @@ static void rxCallback(const uint8_t recvd)
 				state = DATA_MODE;
 				packet.Port = rxdata;
 				/* if no service registered at this portID */
-				if (i2csrvc[packet.Port - PORT_0].pService == NULL) {
+				if (!(isValidService(icsID, packet.Port)))
+				{
 					state = BAD_FRAME;
 					response = INVALID_SRVC;
 				}
 				/* if not enough parameters for the service at this portID */
-				else if (i2csrvc[packet.Port - PORT_0].len != (packet.Len - 1)) {
+				else if (getParamLen(icsID, packet.Port) != (packet.Len - 1))
+				{
 					state = BAD_FRAME;
 					response = INVALID_PARAMS;
 				}
@@ -232,15 +194,13 @@ static void rxCallback(const uint8_t recvd)
 }
 static void pushpacket(void)
 {
-	if (i2csrvc[packet.Port - PORT_0].run != 0) {
+	int ret = pushParam2Service(icsID, packet.Port, packet.Data);
+	if (ret == -3)
+	{
 		response = FRAME_OK_SRVC_BUSY;
 	}
-	else {
-		i2csrvc[packet.Port - PORT_0].run++;
-		/* check for null buffers in param */
-		if (i2csrvc[packet.Port - PORT_0].param) {
-			memcpy(i2csrvc[packet.Port - PORT_0].param, packet.Data, i2csrvc[packet.Port - PORT_0].len);
-		}
+	else if(ret == 0) 
+	{
 		response = FRAME_OK;
 	}
 }
