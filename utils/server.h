@@ -3,7 +3,7 @@
  * @author 	Mohit Rathod
  * Created: 19 07 2024, 07:09:39 am
  * -----
- * Last Modified: 21 07 2024, 09:30:41 am
+ * Last Modified: 22 07 2024, 06:00:14 pm
  * Modified By  : Mohit Rathod
  * -----
  * MIT License
@@ -104,7 +104,10 @@ bool isValidService(serverID_t serverID, portID_t portID);
  * @param   serverID - server identifier
  * @param   portID - port identifier
  * @param   data - params data
- * @return  0 on sucess, -1 otherwise
+ * @return   0 on sucess
+ *          -1 on invalid serverID
+ *          -2 on invalid portID
+ *          -3 if service busy
  */
 int pushParam2Service(serverID_t serverID, portID_t portID, void *data);
 
